@@ -14,9 +14,10 @@
 html,body{height:100%;height:100dvh;overflow:hidden;background:#fdf3d8;font-family:'Fredoka',sans-serif;max-width:100vw}
 #app{height:100%;height:100dvh;width:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;touch-action:none;user-select:none;-webkit-user-select:none}
 header{width:100%;max-width:480px;display:flex;align-items:center;justify-content:space-between;padding:6px 12px;gap:8px}
-#alvo{background:#fff;border:3px solid #f2b418;border-radius:18px;padding:3px 12px;display:flex;align-items:center;gap:8px;box-shadow:0 3px 0 rgba(0,0,0,.08)}
+#alvo{background:#fff;border:3px solid #f0e2b0;border-radius:18px;padding:3px 12px;display:flex;align-items:center;gap:8px;box-shadow:0 3px 0 rgba(0,0,0,.08)}
 #alvoTxt{font-size:15px;color:#6b5b2a;font-weight:600}
-#alvoLetra{font-size:30px;font-weight:700;min-width:36px;text-align:center}
+#alvoLetra{width:38px;height:38px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:21px;font-weight:700;color:#fff;border:3px solid #f2b418;box-shadow:0 2px 0 rgba(0,0,0,.12);animation:pulsaAlvo 1s infinite alternate}
+@keyframes pulsaAlvo{from{transform:scale(1)}to{transform:scale(1.08)}}
 .btnTopo{font-size:24px;background:#fff;border:3px solid #f2b418;border-radius:14px;padding:5px 9px;cursor:pointer;touch-action:manipulation}
 #estrelas{font-size:16px;letter-spacing:2px;min-height:20px;text-align:center;width:100%;max-width:480px}
 #areaJogo{position:relative;flex:1;display:flex;align-items:center;justify-content:center;width:100%}
@@ -36,12 +37,16 @@ canvas{display:block;background:#fffdf3;border-radius:14px;border:4px solid #e7d
 .overlay p{font-size:18px;color:#6b5b2a}
 .overlay button{font-family:inherit;font-size:22px;font-weight:600;padding:12px 28px;border-radius:18px;border:none;cursor:pointer;background:#3fae5a;color:#fff;box-shadow:0 5px 0 #2c7a3f;touch-action:manipulation}
 .overlay button:active{transform:translateY(3px);box-shadow:0 2px 0 #2c7a3f}
-.faseBtn{display:flex;flex-direction:column;align-items:center;gap:3px;width:min(92vw,420px);padding:16px 20px;font-size:23px}
-.faseBtn small{font-size:15px;font-weight:500;opacity:.85}
+.faseBtn{display:flex;flex-direction:column;align-items:center;gap:5px;width:min(92vw,420px);padding:14px 20px;font-size:23px}
+.faseBtn small{font-size:14px;font-weight:500;opacity:.85}
 .faseBtn.azul{background:#2f86eb;box-shadow:0 5px 0 #1c5fa8}
 .faseBtn.azul:active{box-shadow:0 2px 0 #1c5fa8}
 .faseBtn.bloqueado{opacity:.45;pointer-events:none}
+.letrasLinha{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin-top:2px}
+.miniLetra{width:30px;height:30px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;color:#fff;border:2px solid rgba(0,0,0,.25);box-shadow:0 2px 0 rgba(0,0,0,.15)}
 .voltar{background:transparent !important;color:#6b5b2a !important;box-shadow:none !important;font-size:17px !important;padding:6px 14px !important}
+#btnProxima{background:#2f86eb;box-shadow:0 5px 0 #1c5fa8}
+#btnProxima:active{box-shadow:0 2px 0 #1c5fa8}
 #btnCopiar{background:#fff;color:#6b5b2a;box-shadow:0 5px 0 #d8c58a}
 #btnNativo{background:#f2b418;color:#6b4b00;box-shadow:0 5px 0 #b98a0a}
 #btnCaca{background:#f2b418;color:#6b4b00;box-shadow:0 5px 0 #b98a0a}
@@ -54,7 +59,7 @@ canvas{display:block;background:#fffdf3;border-radius:14px;border:4px solid #e7d
 <body>
 <div id="app">
   <header>
-    <div id="alvo"><span id="alvoTxt">Procure:</span><span id="alvoLetra">A</span></div>
+    <div id="alvo"><span id="alvoTxt">Procure:</span><span id="alvoLetra" style="background:#e74c3c">A</span></div>
     <div style="display:flex;gap:6px">
       <button class="btnTopo" onclick="voltarMenu()" title="Menu">🏠</button>
       <button class="btnTopo" onclick="falarAlvo()" title="Repetir">🔊</button>
@@ -78,19 +83,62 @@ canvas{display:block;background:#fffdf3;border-radius:14px;border:4px solid #e7d
 <div id="menuFases" class="overlay">
   <h1>🐍 A Cobrinha das Vogais</h1>
   <p>Escolha a fase:</p>
-  <button class="faseBtn" onclick="abrirFase(0)">🟢 Fase 1 · Vogais <span id="medVog"></span><small>A → E → I → O → U</small></button>
+  <button class="faseBtn" onclick="abrirFase(0)">🟢 Fase 1 · Vogais <span id="medVog"></span>
+    <span class="letrasLinha">
+      <span class="miniLetra" style="background:#e74c3c">A</span>
+      <span class="miniLetra" style="background:#2f86eb">E</span>
+      <span class="miniLetra" style="background:#f0b429">I</span>
+      <span class="miniLetra" style="background:#e8752a">O</span>
+      <span class="miniLetra" style="background:#8e44ad">U</span>
+    </span>
+  </button>
   <button class="faseBtn azul" onclick="abrirBlocos()">🔵 Fase 2 · Consoantes <span id="medConso"></span><small>5 blocos · 26 letras</small></button>
-  <p class="versao">Uma criação 52IA · versão 7</p>
-</div>
+  </div>
 
 <div id="menuBlocos" class="overlay escondido">
   <h1>🔵 Consoantes</h1>
   <p>Escolha o bloco:</p>
-  <button class="faseBtn azul" id="btnB1" onclick="abrirBloco(1)">📦 Bloco 1 <span id="medB1"></span><small>M → P → S → T → B</small></button>
-  <button class="faseBtn azul" id="btnB2" onclick="abrirBloco(2)">📦 Bloco 2 <span id="medB2"></span><small>L → N → D → C → F</small></button>
-  <button class="faseBtn azul" id="btnB3" onclick="abrirBloco(3)">📦 Bloco 3 <span id="medB3"></span><small>V → R → G → H → J</small></button>
-  <button class="faseBtn azul" id="btnB4" onclick="abrirBloco(4)">📦 Bloco 4 <span id="medB4"></span><small>Q → X → Z</small></button>
-  <button class="faseBtn azul" id="btnB5" onclick="abrirBloco(5)">📦 Bloco 5 <span id="medB5"></span><small>K → W → Y</small></button>
+  <button class="faseBtn azul" id="btnB1" onclick="abrirBloco(1)">📦 Bloco 1 <span id="medB1"></span>
+    <span class="letrasLinha">
+      <span class="miniLetra" style="background:#16a085">M</span>
+      <span class="miniLetra" style="background:#d35400">P</span>
+      <span class="miniLetra" style="background:#2980b9">S</span>
+      <span class="miniLetra" style="background:#c0392b">T</span>
+      <span class="miniLetra" style="background:#27ae60">B</span>
+    </span>
+  </button>
+  <button class="faseBtn azul" id="btnB2" onclick="abrirBloco(2)">📦 Bloco 2 <span id="medB2"></span>
+    <span class="letrasLinha">
+      <span class="miniLetra" style="background:#8e44ad">L</span>
+      <span class="miniLetra" style="background:#e67e22">N</span>
+      <span class="miniLetra" style="background:#2f86eb">D</span>
+      <span class="miniLetra" style="background:#c0392b">C</span>
+      <span class="miniLetra" style="background:#16a085">F</span>
+    </span>
+  </button>
+  <button class="faseBtn azul" id="btnB3" onclick="abrirBloco(3)">📦 Bloco 3 <span id="medB3"></span>
+    <span class="letrasLinha">
+      <span class="miniLetra" style="background:#16a085">V</span>
+      <span class="miniLetra" style="background:#e74c3c">R</span>
+      <span class="miniLetra" style="background:#27ae60">G</span>
+      <span class="miniLetra" style="background:#8e44ad">H</span>
+      <span class="miniLetra" style="background:#f39c12">J</span>
+    </span>
+  </button>
+  <button class="faseBtn azul" id="btnB4" onclick="abrirBloco(4)">📦 Bloco 4 <span id="medB4"></span>
+    <span class="letrasLinha">
+      <span class="miniLetra" style="background:#8e44ad">Q</span>
+      <span class="miniLetra" style="background:#e74c3c">X</span>
+      <span class="miniLetra" style="background:#16a085">Z</span>
+    </span>
+  </button>
+  <button class="faseBtn azul" id="btnB5" onclick="abrirBloco(5)">📦 Bloco 5 <span id="medB5"></span>
+    <span class="letrasLinha">
+      <span class="miniLetra" style="background:#2980b9">K</span>
+      <span class="miniLetra" style="background:#e67e22">W</span>
+      <span class="miniLetra" style="background:#c0392b">Y</span>
+    </span>
+  </button>
   <button class="voltar" onclick="voltarMenu()">← Voltar</button>
 </div>
 
@@ -107,6 +155,7 @@ canvas{display:block;background:#fffdf3;border-radius:14px;border:4px solid #e7d
   <div id="medalha">🏆</div>
   <h1 id="tituloFim">🎉 Você completou!</h1>
   <p id="resumo"></p>
+  <button id="btnProxima" style="display:none" onclick="proximaFase()">Próxima fase ▶</button>
   <button id="btnDeNovo" onclick="jogarDeNovo()">Jogar de novo</button>
   <button id="btnCaca" onclick="modoCaca()">Modo caça 🔍</button>
   <button id="btnMenu2" onclick="voltarMenu()">🏠 Menu de fases</button>
@@ -114,10 +163,13 @@ canvas{display:block;background:#fffdf3;border-radius:14px;border:4px solid #e7d
 
 <script>
 /* =========================================================
-   A COBRINHA DAS VOGAIS v7 — alfabetização (4-5 anos)
+   A COBRINHA DAS VOGAIS v12 — alfabetização (4-5 anos)
    Fase 1: Vogais (A→E→I→O→U)
    Fase 2: Consoantes em 5 blocos — 26 letras completas.
-   Menu maior no celular + painel de compartilhar.
+   Menus com bolinhas coloridas das letras (mesmo modelo
+   do tabuleiro). Cobrinha nasce com 2 blocos; cada letra
+   comida vira 1 bloco dela mesma, na ordem certa.
+   Esbarrar no corpo NÃO corta nada: nenhuma letra some.
    Cobra lenta, sem morte, progresso salvo no aparelho.
    ========================================================= */
 const COLS = 10, ROWS = 12;
@@ -167,7 +219,9 @@ const GRUPOS = [
 let cobra = [], dir = {x:1,y:0}, dirPendente = null;
 let grupo = GRUPOS[0], alvoIdx = 0, comidas = 0, rodando = false, modo = 'facil';
 let letras = [];
+let letrasNaCobra = [];
 let erroT = 0, cel = 30;
+let crescerPendente = 0;
 
 const $ = s => document.querySelector(s);
 const tela = $('#tela'), ctx = tela.getContext('2d');
@@ -211,8 +265,9 @@ function falar(txt){
 function atual(){ return grupo.letras[alvoIdx]; }
 function falarAlvo(){ falar('A cobrinha quer a letra ' + atual().fala + '!'); }
 function anunciarAlvo(){
-  $('#alvoLetra').textContent = atual().l;
-  $('#alvoLetra').style.color = atual().cor;
+  const a = atual();
+  $('#alvoLetra').textContent = a.l;
+  $('#alvoLetra').style.background = a.cor;
   falarAlvo();
 }
 
@@ -273,19 +328,43 @@ function colocarLetras(){
   else grupo.letras.forEach(v => letras.push(celulaLivre(v)));
 }
 
-// ---- Cobra ----
+// ---- Cobra (nasce com 2 blocos) ----
 function novaCobra(){
   for (let y=2; y<ROWS-2; y++){
-    for (let x=1; x<COLS-4; x++){
-      const livre = [0,1,2].every(i => !letras.some(t=>t.x===x+i && t.y===y));
-      if (livre){ cobra=[{x:x+2,y},{x:x+1,y},{x,y}]; dir={x:1,y:0}; dirPendente=null; return; }
+    for (let x=1; x<COLS-2; x++){
+      const livre = !letras.some(t => (t.x===x || t.x===x+1) && t.y===y);
+      if (livre){ cobra=[{x:x+1,y},{x,y}]; dir={x:1,y:0}; dirPendente=null; return; }
     }
   }
-  cobra=[{x:5,y:6},{x:4,y:6},{x:3,y:6}]; dir={x:1,y:0}; dirPendente=null;
+  cobra=[{x:5,y:6},{x:4,y:6}]; dir={x:1,y:0}; dirPendente=null;
 }
-function encolher(){ somOps(); erroT = performance.now(); novaCobra(); }
 
-// ---- Passo da cobra ----
+// ---- Resgate: se enrolar de vez, reencaixa a cobrinha sem perder letras ----
+function reorganizar(){
+  const n = cobra.length;
+  for (let y=0; y<ROWS; y++){
+    for (let x=0; x+n<=COLS; x++){
+      if (letras.every(t => t.y!==y || t.x<x || t.x>=x+n)){
+        dir={x:1,y:0}; dirPendente=null;
+        cobra = cobra.map((_,i)=>({x:x+n-1-i, y}));
+        balao('A cobrinha se reorganizou! 🐍');
+        return;
+      }
+    }
+  }
+  for (let x=0; x<COLS; x++){
+    for (let y=0; y+n<=ROWS; y++){
+      if (letras.every(t => t.x!==x || t.y<y || t.y>=y+n)){
+        dir={x:0,y:1}; dirPendente=null;
+        cobra = cobra.map((_,i)=>({x, y:y+n-1-i}));
+        balao('A cobrinha se reorganizou! 🐍');
+        return;
+      }
+    }
+  }
+}
+
+// ---- Passo da cobra (esbarrar não corta nada) ----
 function passo(){
   if (dirPendente){
     const reverso = dirPendente.x === -dir.x && dirPendente.y === -dir.y;
@@ -294,14 +373,24 @@ function passo(){
   }
   const nx = (cobra[0].x + dir.x + COLS) % COLS;
   const ny = (cobra[0].y + dir.y + ROWS) % ROWS;
-  if (cobra.some(s => s.x===nx && s.y===ny)){ encolher(); return; }
+  if (cobra.some(s => s.x===nx && s.y===ny)){
+    const t = performance.now();
+    if (t - erroT > 700){ somOps(); erroT = t; }
+    const temSaida = [[1,0],[-1,0],[0,1],[0,-1]].some(([dx,dy]) => {
+      const tx=(cobra[0].x+dx+COLS)%COLS, ty=(cobra[0].y+dy+ROWS)%ROWS;
+      return !cobra.some(s=>s.x===tx && s.y===ty);
+    });
+    if (!temSaida) reorganizar();
+    return;
+  }
   cobra.unshift({x:nx, y:ny});
-  let cresceu = false;
   const li = letras.findIndex(t => t.x===nx && t.y===ny);
   if (li >= 0){
     const t = letras[li];
     if (t.l === atual().l){
-      cresceu = true; comidas++; pintarEstrelas();
+      comidas++; pintarEstrelas();
+      crescerPendente += 1;
+      letrasNaCobra.push({l:t.l, cor:t.cor, idx:letrasNaCobra.length + 1});
       somGlup(); confete(); balao('É o ' + t.l + '!'); falar(atual().fala + '!');
       letras.splice(li,1); alvoIdx++;
       if (alvoIdx >= grupo.letras.length){ completou(); return; }
@@ -309,7 +398,7 @@ function passo(){
       anunciarAlvo();
     } else { somOps(); erroT = performance.now(); }
   }
-  if (!cresceu) cobra.pop();
+  if (crescerPendente > 0) crescerPendente--; else cobra.pop();
 }
 
 // ---- Fim / navegação ----
@@ -322,13 +411,19 @@ function completou(){
   $('#tituloFim').textContent = grupo.id==='vogais' ? '🎉 Você completou as vogais!' :
     (grupo.bloco===5 ? '🎉 Você completou o alfabeto!' : '🎉 Bloco ' + grupo.bloco + ' concluído!');
   $('#resumo').textContent = 'Você comeu ' + comidas + ' letrinha' + (comidas===1?'':'s') + '! 🏆';
+  const proximo = GRUPOS[GRUPOS.indexOf(grupo)+1];
+  $('#btnProxima').style.display = proximo ? 'inline-block' : 'none';
   $('#telaFim').classList.remove('escondido');
   falar('Parabéns!');
+}
+function proximaFase(){
+  const p = GRUPOS[GRUPOS.indexOf(grupo)+1];
+  if (p) iniciarGrupo(p, 'facil');
 }
 function iniciarGrupo(g, m){
   garantirAudio();
   grupo = g; modo = m || 'facil';
-  alvoIdx = 0; comidas = 0; pintarEstrelas();
+  alvoIdx = 0; comidas = 0; crescerPendente = 0; letrasNaCobra = []; pintarEstrelas();
   $('#menuFases').classList.add('escondido');
   $('#menuBlocos').classList.add('escondido');
   $('#painelShare').classList.add('escondido');
@@ -464,6 +559,21 @@ function desenhar(agora){
         ctx.fillStyle='#fff'; ctx.beginPath(); ctx.arc(ex,ey,3.2,0,Math.PI*2); ctx.fill();
         ctx.fillStyle='#222'; ctx.beginPath(); ctx.arc(ex+dir.x,ey+dir.y,1.6,0,Math.PI*2); ctx.fill();
       });
+    }
+  });
+  // letras comidas viajam no corpo, cada uma no seu bloco, na cor delas
+  ctx.font = '700 ' + Math.round(cel*0.42) + 'px Fredoka, sans-serif';
+  letrasNaCobra.forEach(c=>{
+    if (c.idx < cobra.length){
+      const s = cobra[c.idx];
+      const lx = s.x*cel + cel/2 + off, ly = s.y*cel + cel/2;
+      ctx.fillStyle = c.cor;
+      ctx.beginPath(); ctx.arc(lx, ly, cel*0.36, 0, Math.PI*2); ctx.fill();
+      ctx.lineWidth = 2; ctx.strokeStyle = 'rgba(0,0,0,.25)'; ctx.stroke();
+      ctx.lineWidth = 3; ctx.strokeStyle = 'rgba(0,0,0,.30)';
+      ctx.strokeText(c.l, lx, ly + cel*0.02);
+      ctx.fillStyle = '#fff';
+      ctx.fillText(c.l, lx, ly + cel*0.02);
     }
   });
 }
