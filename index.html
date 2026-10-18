@@ -1,1507 +1,351 @@
 <!DOCTYPE html>
-<html lang="pt-BR" data-theme="light">
+<html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>A Cobrinha das Vogais</title>
-  
-  <!-- Basecoat CSS -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/basecoat-css@1.0.2/dist/basecoat.cdn.min.css">
-  
-  <!-- Google Fonts: Fredoka -->
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;700&display=swap">
-  
-  <!-- Shell System -->
-  <style>
-/* Skip artifact shell — fixed styles served beside every artifact.
-   Complements basecoat; artifacts override --accent for their own identity. */
-:root {
-  color-scheme: light dark;
-  --accent: #2563eb;
-  --accent-contrast: #ffffff;
-  --accent-text: color-mix(in srgb, var(--accent) 72%, #000);
-  --bg: #f8f9fb;
-  --surface: #ffffff;
-  --text: #14171f;
-  --text-muted: #5b6472;
-  --border: rgba(20, 23, 31, 0.10);
-  --radius: 10px;
-  --shadow: 0 1px 3px rgba(20, 23, 31, 0.08);
-  --space: 16px;
-}
-/* Theme resolution. Without data-theme the viewer's system preference decides,
-   as it always did. With it, the artifact's own choice wins in BOTH directions:
-   a page that hardcodes one palette must not be handed the opposite set of
-   tokens by the machine it happens to be opened on. The dark values appear
-   twice because a media query cannot be folded into a selector list.
-   The attribute sits inside :where() so these blocks keep the specificity of a
-   bare :root — the page's own <style> is linked after this file and must go on
-   overriding any token it wants, exactly as it could before. */
-@media (prefers-color-scheme: dark) {
-  :root:where(:not([data-theme="light"])) {
-    --accent-text: color-mix(in srgb, var(--accent) 78%, #fff);
-    --bg: #101318;
-    --surface: #181c23;
-    --text: #eef1f6;
-    --text-muted: #9aa4b2;
-    --border: rgba(238, 241, 246, 0.12);
-    --shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
-  }
-}
-:root:where([data-theme="dark"]) {
-  color-scheme: dark;
-  --accent-text: color-mix(in srgb, var(--accent) 78%, #fff);
-  --bg: #101318;
-  --surface: #181c23;
-  --text: #eef1f6;
-  --text-muted: #9aa4b2;
-  --border: rgba(238, 241, 246, 0.12);
-  --shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
-}
-:root:where([data-theme="light"]) { color-scheme: light; }
-* { box-sizing: border-box; }
-html, body { margin: 0; padding: 0; }
-body {
-  background: var(--bg);
-  color: var(--text);
-  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-  line-height: 1.55;
-  -webkit-font-smoothing: antialiased;
-}
-img { max-width: 100%; display: block; }
-
-.shell-container { max-width: 1100px; margin: 0 auto; padding: 0 20px; }
-.shell-section { padding: calc(var(--space) * 2) 0; }
-.shell-grid { display: grid; gap: var(--space); grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
-.shell-toolbar { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-bottom: var(--space); }
-.shell-footer { padding: 24px 0 40px; color: var(--text-muted); font-size: 13px; }
-
-.shell-hero { padding: calc(var(--space) * 3) 0 calc(var(--space) * 2); }
-.shell-hero h1 { font-size: clamp(26px, 4vw, 40px); line-height: 1.15; margin: 0 0 10px; text-wrap: balance; }
-.shell-hero p { color: var(--text-muted); max-width: 60ch; margin: 0; }
-
-.panel {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
-  padding: var(--space);
-}
-
-.kpi { display: flex; flex-direction: column; gap: 4px; }
-.kpi .kpi-value { font-size: 28px; font-weight: 650; line-height: 1.1; }
-.kpi .kpi-label { font-size: 13px; color: var(--text-muted); }
-.kpi .kpi-delta { font-size: 12.5px; font-weight: 600; }
-.kpi .kpi-delta.up { color: #0a8f3c; }
-.kpi .kpi-delta.down { color: #cf3131; }
-
-table.shell-table { border-collapse: collapse; width: 100%; font-size: 14px; }
-table.shell-table th {
-  text-align: left; font-size: 11.5px; letter-spacing: 0.05em; text-transform: uppercase;
-  color: var(--text-muted); font-weight: 600;
-}
-table.shell-table th, table.shell-table td { padding: 9px 12px 9px 0; border-bottom: 1px solid var(--border); }
-table.shell-table td.num, table.shell-table th.num { text-align: right; font-variant-numeric: tabular-nums; }
-table.shell-table tbody tr:hover { background: color-mix(in srgb, var(--accent) 6%, transparent); }
-
-.chart-box { width: 100%; min-height: 220px; }
-.chart-box svg { width: 100%; height: auto; display: block; }
-
-.muted { color: var(--text-muted); }
-.accent { color: var(--accent-text); }
-.shell-badge {
-  display: inline-flex; align-items: center; gap: 6px;
-  font-size: 12px; font-weight: 600; padding: 3px 10px; border-radius: 999px;
-  background: color-mix(in srgb, var(--accent) 12%, transparent); color: var(--accent-text);
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .shell-fade { animation: shell-fade 400ms ease both; }
-  @keyframes shell-fade { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
-}
-
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>🐍 A Cobrinha das Vogais</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;height:100dvh;overflow:hidden;background:#fdf3d8;font-family:'Fredoka',sans-serif;max-width:100vw}
+#app{height:100%;height:100dvh;width:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;touch-action:none;user-select:none}
+header{width:100%;max-width:480px;display:flex;align-items:center;justify-content:space-between;padding:8px 12px;gap:8px}
+#alvo{background:#fff;border:3px solid #f2b418;border-radius:18px;padding:4px 14px;display:flex;align-items:center;gap:10px;box-shadow:0 3px 0 rgba(0,0,0,.08)}
+#alvoTxt{font-size:16px;color:#6b5b2a;font-weight:600}
+#alvoLetra{font-size:34px;font-weight:700;min-width:40px;text-align:center}
+#btnVoz{font-size:26px;background:#fff;border:3px solid #f2b418;border-radius:14px;padding:6px 10px;cursor:pointer}
+#estrelas{font-size:20px;letter-spacing:2px;min-height:26px;text-align:center;width:100%;max-width:480px}
+#areaJogo{position:relative;flex:1;display:flex;align-items:center;justify-content:center;width:100%}
+canvas{display:block;background:#fffdf3;border-radius:14px;border:4px solid #e7d9a8;box-shadow:0 4px 0 rgba(0,0,0,.06);margin:0 auto}
+#balaoMsg{position:absolute;top:40%;left:50%;transform:translate(-50%,-50%);background:#fff;border:4px solid #3fae5a;color:#2c7a3f;font-size:32px;font-weight:700;padding:10px 22px;border-radius:20px;opacity:0;pointer-events:none;transition:opacity .15s,transform .15s}
+#balaoMsg.mostrar{opacity:1;transform:translate(-50%,-50%) scale(1.15)}
+#confete{position:absolute;inset:0;overflow:hidden;pointer-events:none}
+.pedacinho{position:absolute;width:10px;height:14px;top:-16px;border-radius:3px;animation:cai 1.4s linear forwards}
+@keyframes cai{to{transform:translateY(105vh) rotate(720deg);opacity:.9}}
+#dpad{width:100%;max-width:480px;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(2,1fr);gap:8px;padding:10px 16px 18px}
+.seta{font-size:30px;padding:14px 0;background:#fff;border:3px solid #3fae5a;color:#2c7a3f;border-radius:16px;cursor:pointer;box-shadow:0 4px 0 #2c7a3f}
+.seta:active{transform:translateY(3px);box-shadow:0 1px 0 #2c7a3f}
+#sUp{grid-column:2;grid-row:1}#sLeft{grid-column:1;grid-row:2}#sDown{grid-column:2;grid-row:2}#sRight{grid-column:3;grid-row:2}
+.overlay{position:fixed;inset:0;background:rgba(253,243,216,.97);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;text-align:center;padding:24px;z-index:10}
+.overlay.escondido{display:none}
+.overlay h1{font-size:28px;color:#2c7a3f}
+.overlay p{font-size:20px;color:#6b5b2a}
+.overlay button{font-family:inherit;font-size:24px;font-weight:600;padding:14px 30px;border-radius:18px;border:none;cursor:pointer;background:#3fae5a;color:#fff;box-shadow:0 5px 0 #2c7a3f}
+.overlay button:active{transform:translateY(3px);box-shadow:0 2px 0 #2c7a3f}
+#btnCaca{background:#f2b418;color:#6b4b00;box-shadow:0 5px 0 #b98a0a}
+#btnCaca.bloqueado{opacity:.5;pointer-events:none}
+#medalha{font-size:80px;animation:pulsa 1s infinite alternate}
+@keyframes pulsa{from{transform:scale(1)}to{transform:scale(1.15)}}
 </style>
-  
-
-  <style>
-    :root {
-      --accent: #10b981;
-      --font-game: 'Fredoka', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      --vowel-a: #e11d48; /* Vermelho */
-      --vowel-e: #0284c7; /* Azul */
-      --vowel-i: #ca8a04; /* Amarelo ouro (alto contraste) */
-      --vowel-o: #ea580c; /* Laranja */
-      --vowel-u: #9333ea; /* Roxo */
-      --board-bg: #fefce8;
-      --board-grid: #fef08a;
-      --board-border: #fcd34d;
-    }
-
-    * {
-      box-sizing: border-box;
-      user-select: none;
-      -webkit-user-select: none;
-      -webkit-touch-callout: none;
-    }
-
-    body {
-      font-family: var(--font-game);
-      background: #ecfdf5;
-      color: #1f2937;
-      margin: 0;
-      padding: 0;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      touch-action: pan-y;
-      overflow-x: hidden;
-    }
-
-    .game-wrapper {
-      width: 100%;
-      max-width: 440px;
-      margin: 0 auto;
-      padding: 8px 12px;
-      display: flex;
-      flex-direction: column;
-      min-height: 100vh;
-      min-height: 100dvh;
-      height: 100%;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    /* BARRA SUPERIOR */
-    .top-bar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 8px;
-      background: #ffffff;
-      padding: 6px 12px;
-      border-radius: 20px;
-      border: 3px solid #bbf7d0;
-      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.15);
-      flex-shrink: 0;
-    }
-
-    .target-box {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .target-label {
-      font-size: 0.95rem;
-      font-weight: 700;
-      color: #065f46;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-
-    .vowel-badge {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: 44px;
-      height: 44px;
-      border-radius: 50%;
-      color: #ffffff;
-      font-size: 2rem;
-      font-weight: 700;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.2), inset 0 2px 4px rgba(255,255,255,0.4);
-      animation: pulse-bubble 1.8s infinite ease-in-out;
-      text-shadow: 0 2px 4px rgba(0,0,0,0.3);
-    }
-
-    @keyframes pulse-bubble {
-      0%, 100% { transform: scale(1); }
-      50% { transform: scale(1.12); }
-    }
-
-    .audio-btn {
-      background: #f0fdf4;
-      border: 2px solid #86efac;
-      border-radius: 50%;
-      width: 44px;
-      height: 44px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.4rem;
-      cursor: pointer;
-      box-shadow: 0 3px 0 #4ade80;
-      transition: all 0.1s ease;
-      touch-action: manipulation;
-    }
-
-    .audio-btn:active {
-      transform: translateY(3px);
-      box-shadow: 0 0 0 #4ade80;
-    }
-
-    /* PROGRESSO COM ESTRELAS */
-    .stars-tracker {
-      display: flex;
-      gap: 4px;
-      align-items: center;
-      background: #fef9c3;
-      padding: 4px 8px;
-      border-radius: 16px;
-      border: 2px solid #fde047;
-    }
-
-    .star-icon {
-      font-size: 1.3rem;
-      opacity: 0.25;
-      filter: grayscale(1);
-      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-    }
-
-    .star-icon.active {
-      opacity: 1;
-      filter: drop-shadow(0 0 4px #eab308);
-      transform: scale(1.2);
-    }
-
-    /* ÁREA DO TABULEIRO */
-    .canvas-container {
-      position: relative;
-      width: min(100%, 350px);
-      aspect-ratio: 1 / 1;
-      max-height: 44vh;
-      margin: 6px auto;
-      border-radius: 24px;
-      overflow: hidden;
-      border: 5px solid var(--board-border);
-      box-shadow: 0 8px 24px rgba(234, 179, 8, 0.25);
-      background: var(--board-bg);
-      touch-action: none;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-    }
-
-    canvas {
-      display: block;
-      width: 100%;
-      height: 100%;
-      image-rendering: auto;
-    }
-
-    /* EFEITO WIGGLE NA COBRA */
-    .wiggle {
-      animation: wiggle-anim 0.5s ease;
-    }
-
-    @keyframes wiggle-anim {
-      0%, 100% { transform: translate(0, 0) rotate(0deg); }
-      20% { transform: translate(-6px, 3px) rotate(-2deg); }
-      40% { transform: translate(6px, -3px) rotate(2deg); }
-      60% { transform: translate(-4px, -2px) rotate(-1deg); }
-      80% { transform: translate(4px, 2px) rotate(1deg); }
-    }
-
-    /* OVERLAY DE VIBRAÇÃO / SUCESSO DE LETRA */
-    .letter-popup {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%) scale(0.4);
-      opacity: 0;
-      pointer-events: none;
-      background: rgba(255, 255, 255, 0.95);
-      border: 4px solid #10b981;
-      padding: 12px 24px;
-      border-radius: 28px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.25);
-      font-size: 2rem;
-      font-weight: 700;
-      text-align: center;
-      transition: all 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-      z-index: 20;
-    }
-
-    .letter-popup.show {
-      transform: translate(-50%, -50%) scale(1);
-      opacity: 1;
-    }
-
-    /* CONTROLES D-PAD GIGANTES */
-    .dpad-container {
-      width: 100%;
-      max-width: 280px;
-      margin: 0 auto;
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      grid-template-rows: repeat(3, 1fr);
-      gap: 8px;
-      align-items: center;
-      justify-items: center;
-      flex-shrink: 0;
-      padding-bottom: 4px;
-    }
-
-    .dpad-btn {
-      width: 68px;
-      height: 68px;
-      background: #10b981;
-      color: #ffffff;
-      border: none;
-      border-radius: 20px;
-      font-size: 2.2rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      box-shadow: 0 6px 0 #047857, 0 8px 16px rgba(16, 185, 129, 0.3);
-      touch-action: none;
-      -webkit-tap-highlight-color: transparent;
-      transition: transform 0.08s ease, box-shadow 0.08s ease;
-      line-height: 1;
-    }
-
-    .dpad-btn:active {
-      transform: translateY(6px);
-      box-shadow: 0 0 0 #047857;
-      background: #059669;
-    }
-
-    .dpad-btn.up { grid-column: 2; grid-row: 1; }
-    .dpad-btn.left { grid-column: 1; grid-row: 2; }
-    .dpad-btn.center { 
-      grid-column: 2; 
-      grid-row: 2; 
-      background: #e2e8f0; 
-      box-shadow: none; 
-      border-radius: 50%; 
-      width: 32px; 
-      height: 32px; 
-      opacity: 0.5;
-      pointer-events: none;
-    }
-    .dpad-btn.right { grid-column: 3; grid-row: 2; }
-    .dpad-btn.down { grid-column: 2; grid-row: 3; }
-
-    /* TELAS MODAIS / OVERLAYS */
-    .modal-overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(15, 23, 42, 0.82);
-      backdrop-filter: blur(6px);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 16px;
-      z-index: 100;
-    }
-
-    .modal-card {
-      background: #ffffff;
-      width: 100%;
-      max-width: 400px;
-      border-radius: 32px;
-      padding: 28px 20px;
-      text-align: center;
-      box-shadow: 0 20px 40px rgba(0,0,0,0.3);
-      border: 6px solid #86efac;
-      animation: modal-pop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-    }
-
-    @keyframes modal-pop {
-      from { transform: scale(0.8); opacity: 0; }
-      to { transform: scale(1); opacity: 1; }
-    }
-
-    .modal-title {
-      font-size: 2rem;
-      font-weight: 700;
-      color: #065f46;
-      margin: 0 0 12px;
-      line-height: 1.15;
-    }
-
-    .modal-subtitle {
-      font-size: 1.1rem;
-      color: #4b5563;
-      margin: 0 0 20px;
-      font-weight: 500;
-    }
-
-    .hero-snake {
-      width: 130px;
-      height: 130px;
-      margin: 0 auto 16px;
-      animation: float-snake 3s ease-in-out infinite;
-    }
-
-    @keyframes float-snake {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-8px); }
-    }
-
-    .btn-giant {
-      display: block;
-      width: 100%;
-      padding: 16px 20px;
-      font-size: 1.5rem;
-      font-weight: 700;
-      color: #ffffff;
-      background: #10b981;
-      border: none;
-      border-radius: 24px;
-      box-shadow: 0 6px 0 #047857, 0 10px 20px rgba(16, 185, 129, 0.35);
-      cursor: pointer;
-      margin-bottom: 12px;
-      touch-action: manipulation;
-      transition: all 0.1s ease;
-      font-family: inherit;
-    }
-
-    .btn-giant:active {
-      transform: translateY(6px);
-      box-shadow: 0 0 0 #047857;
-    }
-
-    .btn-secondary {
-      background: #0284c7;
-      box-shadow: 0 6px 0 #0369a1, 0 10px 20px rgba(2, 132, 199, 0.35);
-    }
-    .btn-secondary:active {
-      transform: translateY(6px);
-      box-shadow: 0 0 0 #0369a1;
-    }
-
-    .mode-badge {
-      display: inline-block;
-      padding: 4px 10px;
-      border-radius: 12px;
-      background: #ecfdf5;
-      color: #047857;
-      font-weight: 700;
-      font-size: 0.85rem;
-      border: 1px solid #a7f3d0;
-      margin-top: 6px;
-    }
-
-    /* CANVAS DE CONFETE */
-    #confettiCanvas {
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-      z-index: 150;
-    }
-
-    .hidden {
-      display: none !important;
-    }
-
-    @media (max-height: 640px) {
-      .canvas-container {
-        max-height: 38vh;
-      }
-      .dpad-btn {
-        width: 58px;
-        height: 58px;
-        font-size: 1.8rem;
-        border-radius: 16px;
-      }
-    }
-
-    @media (min-height: 750px) {
-      .canvas-container {
-        max-height: 50vh;
-      }
-      .dpad-btn {
-        width: 74px;
-        height: 74px;
-        font-size: 2.5rem;
-      }
-    }
-  </style>
 </head>
 <body>
-
-  <!-- Confetti Canvas -->
-  <canvas id="confettiCanvas"></canvas>
-
-  <div class="game-wrapper">
-    <!-- Top Bar: Current Vowel Target + Sound + Stars -->
-    <header class="top-bar" aria-label="Alvo e Progresso">
-      <div class="target-box">
-        <span class="target-label">Procure:</span>
-        <div id="targetBadge" class="vowel-badge" style="background-color: var(--vowel-a);">A</div>
-        <button id="btnVoice" class="audio-btn" type="button" aria-label="Ouvir a letra novamente" title="Repetir som da letra">
-          🔊
-        </button>
-      </div>
-
-      <div class="stars-tracker" id="starsTracker" aria-label="Progresso das 5 vogais">
-        <span class="star-icon" data-vowel="A">⭐</span>
-        <span class="star-icon" data-vowel="E">⭐</span>
-        <span class="star-icon" data-vowel="I">⭐</span>
-        <span class="star-icon" data-vowel="O">⭐</span>
-        <span class="star-icon" data-vowel="U">⭐</span>
-      </div>
-    </header>
-
-    <!-- Game Board Canvas Container -->
-    <main class="canvas-container" id="boardWrapper">
-      <canvas id="gameCanvas" width="360" height="360" aria-label="Tabuleiro do jogo da cobrinha"></canvas>
-      <div id="letterPopup" class="letter-popup" aria-live="polite"></div>
-    </main>
-
-    <!-- D-Pad Controls (Arrows Only, Big Buttons) -->
-    <nav class="dpad-container" aria-label="Controles da cobra">
-      <button class="dpad-btn up" id="btnUp" type="button" aria-label="Mover para Cima">▲</button>
-      <button class="dpad-btn left" id="btnLeft" type="button" aria-label="Mover para Esquerda">◀</button>
-      <div class="dpad-btn center" aria-hidden="true"></div>
-      <button class="dpad-btn right" id="btnRight" type="button" aria-label="Mover para Direita">▶</button>
-      <button class="dpad-btn down" id="btnDown" type="button" aria-label="Mover para Baixo">▼</button>
-    </nav>
+<div id="app">
+  <header>
+    <div id="alvo"><span id="alvoTxt">Procure:</span><span id="alvoLetra">A</span></div>
+    <button id="btnVoz" title="Repetir">🔊</button>
+  </header>
+  <div id="estrelas"></div>
+  <div id="areaJogo">
+    <canvas id="tela"></canvas>
+    <div id="balaoMsg"></div>
+    <div id="confete"></div>
   </div>
-
-  <!-- TELA INICIAL (Boas-vindas) -->
-  <div class="modal-overlay" id="startModal">
-    <div class="modal-card">
-      <!-- Cobrinha amigável desenhada com SVG nativo -->
-      <svg class="hero-snake" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <circle cx="60" cy="60" r="50" fill="#dcfce7"/>
-        <path d="M28 75 C 32 45, 60 45, 65 65 C 70 85, 95 85, 96 60" stroke="#10b981" stroke-width="18" stroke-linecap="round"/>
-        <!-- Olho grande fofo -->
-        <circle cx="88" cy="50" r="8" fill="#ffffff" stroke="#047857" stroke-width="2.5"/>
-        <circle cx="90" cy="50" r="4.5" fill="#1e293b"/>
-        <circle cx="92" cy="48" r="1.5" fill="#ffffff"/>
-        <!-- Bochecha rosada -->
-        <ellipse cx="80" cy="60" rx="4.5" ry="3.5" fill="#f43f5e" opacity="0.6"/>
-        <!-- Linguinha alegre -->
-        <path d="M96 55 Q 106 56 108 52" stroke="#e11d48" stroke-width="3" stroke-linecap="round"/>
-        <!-- Letras flutuantes -->
-        <text x="26" y="38" font-family="Fredoka, sans-serif" font-size="20" font-weight="bold" fill="#e11d48">A</text>
-        <text x="56" y="32" font-family="Fredoka, sans-serif" font-size="20" font-weight="bold" fill="#0284c7">E</text>
-      </svg>
-
-      <h1 class="modal-title">A Cobrinha das Vogais</h1>
-      <p class="modal-subtitle">Ajude a cobrinha comilona a comer as letrinhas na ordem certa: <strong>A, E, I, O, U</strong>!</p>
-
-      <button class="btn-giant" id="btnStartGame" type="button">▶ Jogar</button>
-      <div class="mode-badge">Para crianças de 4 a 5 anos 🍎</div>
-    </div>
+  <div id="dpad">
+    <button class="seta" id="sUp">▲</button>
+    <button class="seta" id="sLeft">◀</button>
+    <button class="seta" id="sDown">▼</button>
+    <button class="seta" id="sRight">▶</button>
   </div>
+</div>
+
+<div id="telaInicio" class="overlay">
+  <h1>🐍 A Cobrinha das Vogais</h1>
+  <p>Coma as vogais na ordem certa:<br><b>A → E → I → O → U</b></p>
+  <button id="btnJogar">▶ Jogar</button>
+</div>
+
+<div id="telaFim" class="overlay escondido">
+  <div id="medalha">🏆</div>
+  <h1>🎉 Você completou as vogais!</h1>
+  <p id="resumo"></p>
+  <button id="btnDeNovo">Jogar de novo</button>
+  <button id="btnCaca" class="bloqueado">Modo caça 🔍</button>
+</div>
 
-  <!-- TELA DE CELEBRAÇÃO (Completou a sequência) -->
-  <div class="modal-overlay hidden" id="celebrateModal">
-    <div class="modal-card">
-      <div style="font-size: 4rem; line-height: 1; margin-bottom: 8px;">🎉 🏆 ⭐</div>
-      <h2 class="modal-title" style="color: #047857;">Parabéns!</h2>
-      <p class="modal-subtitle">Você completou todas as vogais:<br><strong style="color: #0284c7; font-size: 1.3rem;">A • E • I • O • U</strong></p>
-      
-      <p id="lettersEatenCount" style="font-weight: 700; color: #4b5563; margin-bottom: 20px; font-size: 1.1rem;"></p>
-
-      <button class="btn-giant" id="btnPlayAgain" type="button">Jogar de Novo 🔁</button>
-      <button class="btn-giant btn-secondary" id="btnHuntMode" type="button">Modo Caça 🔍</button>
-    </div>
-  </div>
-
-  <script>
-    /* =========================================================
-       A COBRINHA DAS VOGAIS - SCRIPT COMPLETO E AUTOCONTIDO
-       ========================================================= */
-
-    // Configuração das Vogais
-    const VOWELS = [
-      { letter: 'A', name: 'Á', color: '#e11d48', soundText: 'A cobrinha quer a letra A!' },
-      { letter: 'E', name: 'É', color: '#0284c7', soundText: 'A cobrinha quer a letra E!' },
-      { letter: 'I', name: 'I', color: '#ca8a04', soundText: 'A cobrinha quer a letra I!' },
-      { letter: 'O', name: 'Ó', color: '#ea580c', soundText: 'A cobrinha quer a letra O!' },
-      { letter: 'U', name: 'U', color: '#9333ea', soundText: 'A cobrinha quer a letra U!' }
-    ];
-
-    // Constantes do Tabuleiro
-    const GRID_SIZE = 12; // 12x12
-    const STEP_INTERVAL = 400; // ~400ms por passo (velocidade lenta e acolhedora)
-
-    // Estado do Jogo
-    let gameState = {
-      snake: [
-        { x: 5, y: 6 },
-        { x: 4, y: 6 },
-        { x: 3, y: 6 }
-      ],
-      dir: { x: 1, y: 0 },
-      nextDir: { x: 1, y: 0 },
-      targetIndex: 0,
-      mode: 'easy', // 'easy' ou 'hunt'
-      items: [], // [{ x, y, letter, color }]
-      totalEaten: 0,
-      isRunning: false,
-      lastTick: 0,
-      hasWonOnce: false
-    };
-
-    // Referências DOM
-    const canvas = document.getElementById('gameCanvas');
-    const ctx = canvas.getContext('2d');
-    const boardWrapper = document.getElementById('boardWrapper');
-    const targetBadge = document.getElementById('targetBadge');
-    const btnVoice = document.getElementById('btnVoice');
-    const starsTracker = document.getElementById('starsTracker');
-    const letterPopup = document.getElementById('letterPopup');
-
-    const startModal = document.getElementById('startModal');
-    const btnStartGame = document.getElementById('btnStartGame');
-    const celebrateModal = document.getElementById('celebrateModal');
-    const btnPlayAgain = document.getElementById('btnPlayAgain');
-    const btnHuntMode = document.getElementById('btnHuntMode');
-    const lettersEatenCount = document.getElementById('lettersEatenCount');
-
-    // Botões D-Pad
-    const btnUp = document.getElementById('btnUp');
-    const btnDown = document.getElementById('btnDown');
-    const btnLeft = document.getElementById('btnLeft');
-    const btnRight = document.getElementById('btnRight');
-
-    /* =========================================================
-       SISTEMA DE ÁUDIO (Web Audio API + SpeechSynthesis)
-       ========================================================= */
-    let audioCtx = null;
-
-    function initAudio() {
-      if (!audioCtx) {
-        const AudioContextClass = window.AudioContext || window.webkitAudioContext;
-        if (AudioContextClass) {
-          audioCtx = new AudioContextClass();
-        }
-      }
-      if (audioCtx && audioCtx.state === 'suspended') {
-        audioCtx.resume();
-      }
-    }
-
-    // Som alegre de comer ("glup")
-    function playEatSound() {
-      if (!audioCtx) return;
-      try {
-        const now = audioCtx.currentTime;
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-
-        osc.type = 'triangle';
-        osc.frequency.setValueAtTime(260, now);
-        osc.frequency.exponentialRampToValueAtTime(700, now + 0.14);
-
-        gain.gain.setValueAtTime(0.3, now);
-        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.16);
-
-        osc.connect(gain);
-        gain.connect(audioCtx.destination);
-
-        osc.start(now);
-        osc.stop(now + 0.18);
-      } catch (e) {
-        // Fallback silencioso
-      }
-    }
-
-    // Som suave de "ops"
-    function playOpsSound() {
-      if (!audioCtx) return;
-      try {
-        const now = audioCtx.currentTime;
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(320, now);
-        osc.frequency.exponentialRampToValueAtTime(160, now + 0.2);
-
-        gain.gain.setValueAtTime(0.2, now);
-        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.22);
-
-        osc.connect(gain);
-        gain.connect(audioCtx.destination);
-
-        osc.start(now);
-        osc.stop(now + 0.24);
-      } catch (e) {
-        // Fallback silencioso
-      }
-    }
-
-    // Fanfarra curta de vitória
-    function playFanfare() {
-      if (!audioCtx) return;
-      try {
-        const notes = [261.63, 329.63, 392.00, 523.25]; // C, E, G, High C
-        notes.forEach((freq, i) => {
-          const now = audioCtx.currentTime + (i * 0.12);
-          const osc = audioCtx.createOscillator();
-          const gain = audioCtx.createGain();
-
-          osc.type = 'triangle';
-          osc.frequency.setValueAtTime(freq, now);
-
-          gain.gain.setValueAtTime(0.28, now);
-          gain.gain.exponentialRampToValueAtTime(0.01, now + 0.25);
-
-          osc.connect(gain);
-          gain.connect(audioCtx.destination);
-
-          osc.start(now);
-          osc.stop(now + 0.28);
-        });
-      } catch (e) {
-        // Fallback silencioso
-      }
-    }
-
-    // Síntese de Voz (Web Speech API)
-    function speak(text) {
-      if (!('speechSynthesis' in window)) return;
-      try {
-        window.speechSynthesis.cancel(); // Cancela falas anteriores
-        const utterance = new SpeechSynthesisUtterance(text);
-        utterance.lang = 'pt-BR';
-        utterance.rate = 0.95; // Levemente cadenciado para compreensão infantil
-        utterance.pitch = 1.15; // Tom amigável e acolhedor
-        
-        // Tenta selecionar voz pt-BR disponível
-        const voices = window.speechSynthesis.getVoices();
-        const ptVoice = voices.find(v => v.lang.includes('pt-BR') || v.lang.includes('pt'));
-        if (ptVoice) {
-          utterance.voice = ptVoice;
-        }
-
-        window.speechSynthesis.speak(utterance);
-      } catch (e) {
-        // Fallback silencioso
-      }
-    }
-
-    // Carrega vozes caso o navegador as carregue assincronamente
-    if ('speechSynthesis' in window) {
-      window.speechSynthesis.onvoiceschanged = () => {
-        window.speechSynthesis.getVoices();
-      };
-    }
-
-    /* =========================================================
-       SISTEMA DE PARTÍCULAS E CONFETES
-       ========================================================= */
-    const confCanvas = document.getElementById('confettiCanvas');
-    const confCtx = confCanvas.getContext('2d');
-    let confettiParticles = [];
-
-    function resizeConfetti() {
-      confCanvas.width = window.innerWidth;
-      confCanvas.height = window.innerHeight;
-    }
-    window.addEventListener('resize', resizeConfetti);
-    resizeConfetti();
-
-    function triggerConfetti(count = 50) {
-      const colors = ['#e11d48', '#0284c7', '#ca8a04', '#ea580c', '#9333ea', '#10b981', '#f59e0b'];
-      for (let i = 0; i < count; i++) {
-        confettiParticles.push({
-          x: window.innerWidth / 2 + (Math.random() * 80 - 40),
-          y: window.innerHeight / 2 - 40,
-          vx: (Math.random() - 0.5) * 12,
-          vy: Math.random() * -12 - 4,
-          size: Math.random() * 8 + 6,
-          color: colors[Math.floor(Math.random() * colors.length)],
-          rotation: Math.random() * 360,
-          vRot: (Math.random() - 0.5) * 10,
-          opacity: 1
-        });
-      }
-    }
-
-    function updateConfetti() {
-      confCtx.clearRect(0, 0, confCanvas.width, confCanvas.height);
-      for (let i = confettiParticles.length - 1; i >= 0; i--) {
-        const p = confettiParticles[i];
-        p.x += p.vx;
-        p.y += p.vy;
-        p.vy += 0.35; // gravidade
-        p.rotation += p.vRot;
-        p.opacity -= 0.012;
-
-        if (p.opacity <= 0 || p.y > confCanvas.height + 50) {
-          confettiParticles.splice(i, 1);
-          continue;
-        }
-
-        confCtx.save();
-        confCtx.globalAlpha = Math.max(0, p.opacity);
-        confCtx.translate(p.x, p.y);
-        confCtx.rotate((p.rotation * Math.PI) / 180);
-        confCtx.fillStyle = p.color;
-        confCtx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size * 0.7);
-        confCtx.restore();
-      }
-      requestAnimationFrame(updateConfetti);
-    }
-    requestAnimationFrame(updateConfetti);
-
-    /* =========================================================
-       LÓGICA DO JOGO E ITENS
-       ========================================================= */
-
-    function getFreeCell() {
-      const occupied = new Set();
-      gameState.snake.forEach(seg => occupied.add(`${seg.x},${seg.y}`));
-      gameState.items.forEach(item => occupied.add(`${item.x},${item.y}`));
-
-      const freeCells = [];
-      for (let x = 0; x < GRID_SIZE; x++) {
-        for (let y = 0; y < GRID_SIZE; y++) {
-          if (!occupied.has(`${x},${y}`)) {
-            freeCells.push({ x, y });
-          }
-        }
-      }
-
-      if (freeCells.length === 0) return { x: 0, y: 0 };
-      return freeCells[Math.floor(Math.random() * freeCells.length)];
-    }
-
-    function setupItems() {
-      gameState.items = [];
-      const currentTarget = VOWELS[gameState.targetIndex];
-
-      if (gameState.mode === 'easy') {
-        // Apenas a letra-alvo aparece no tabuleiro
-        const spot = getFreeCell();
-        gameState.items.push({
-          x: spot.x,
-          y: spot.y,
-          letter: currentTarget.letter,
-          color: currentTarget.color
-        });
-      } else {
-        // Modo Caça: todas as 5 vogais espalhadas
-        VOWELS.forEach(v => {
-          const spot = getFreeCell();
-          gameState.items.push({
-            x: spot.x,
-            y: spot.y,
-            letter: v.letter,
-            color: v.color
-          });
-        });
-      }
-    }
-
-    function updateTopUI() {
-      const target = VOWELS[gameState.targetIndex];
-      targetBadge.textContent = target.letter;
-      targetBadge.style.backgroundColor = target.color;
-
-      // Atualiza estrelas
-      const stars = starsTracker.querySelectorAll('.star-icon');
-      stars.forEach((star, index) => {
-        if (index < gameState.targetIndex) {
-          star.classList.add('active');
-        } else {
-          star.classList.remove('active');
-        }
-      });
-    }
-
-    function announceTarget() {
-      const target = VOWELS[gameState.targetIndex];
-      speak(target.soundText);
-    }
-
-    function showLetterPopup(letter, color) {
-      letterPopup.innerHTML = `É o <span style="color: ${color}; font-size: 2.4rem;">${letter}</span>! ✨`;
-      letterPopup.style.borderColor = color;
-      letterPopup.classList.add('show');
-      setTimeout(() => {
-        letterPopup.classList.remove('show');
-      }, 1000);
-    }
-
-    function triggerWiggle() {
-      boardWrapper.classList.remove('wiggle');
-      // Força reflow para reiniciar animação
-      void boardWrapper.offsetWidth;
-      boardWrapper.classList.add('wiggle');
-      playOpsSound();
-    }
-
-    function changeDirection(dx, dy) {
-      // Proibir reversão de 180°
-      if (dx !== 0 && gameState.dir.x === -dx) return;
-      if (dy !== 0 && gameState.dir.y === -dy) return;
-      gameState.nextDir = { x: dx, y: dy };
-    }
-
-    /* =========================================================
-       PASSO DO JOGO (TICK)
-       ========================================================= */
-
-    function gameStep() {
-      gameState.dir = { ...gameState.nextDir };
-      
-      const head = gameState.snake[0];
-      let newX = head.x + gameState.dir.x;
-      let newY = head.y + gameState.dir.y;
-
-      // Wrap-around nas bordas (sem bater em paredes)
-      if (newX < 0) newX = GRID_SIZE - 1;
-      else if (newX >= GRID_SIZE) newX = 0;
-      if (newY < 0) newY = GRID_SIZE - 1;
-      else if (newY >= GRID_SIZE) newY = 0;
-
-      const newHead = { x: newX, y: newY };
-
-      // Bateu no próprio corpo?
-      const hitBody = gameState.snake.some((seg, idx) => idx > 0 && seg.x === newHead.x && seg.y === newHead.y);
-      if (hitBody) {
-        triggerWiggle();
-        // Volta ao tamanho inicial (3 segmentos) em posição livre
-        const center = { x: 5, y: 6 };
-        gameState.snake = [
-          { x: center.x, y: center.y },
-          { x: (center.x - 1 + GRID_SIZE) % GRID_SIZE, y: center.y },
-          { x: (center.x - 2 + GRID_SIZE) % GRID_SIZE, y: center.y }
-        ];
-        gameState.dir = { x: 1, y: 0 };
-        gameState.nextDir = { x: 1, y: 0 };
-        return;
-      }
-
-      // Verifica se comeu algum item
-      const itemIndex = gameState.items.findIndex(it => it.x === newHead.x && it.y === newHead.y);
-      const targetVowel = VOWELS[gameState.targetIndex];
-
-      if (itemIndex !== -1) {
-        const itemEaten = gameState.items[itemIndex];
-
-        if (itemEaten.letter === targetVowel.letter) {
-          // LETRA CORRETA!
-          playEatSound();
-          triggerConfetti(25);
-          showLetterPopup(itemEaten.letter, itemEaten.color);
-          speak(`${targetVowel.name}!`);
-
-          // Cobra cresce 1 segmento
-          gameState.snake.unshift(newHead);
-          gameState.totalEaten++;
-          gameState.targetIndex++;
-
-          if (gameState.targetIndex >= VOWELS.length) {
-            // COMPLETU TODAS AS VOGAIS!
-            celebrateSequence();
-            return;
-          } else {
-            // Próximo alvo
-            setupItems();
-            updateTopUI();
-            setTimeout(() => {
-              announceTarget();
-            }, 900);
-          }
-        } else {
-          // LETRA ERRADA (no Modo Caça): balança de leve, som ops, não pune
-          triggerWiggle();
-          speak(`Essa é a letra ${itemEaten.letter}. Procure a letra ${targetVowel.letter}!`);
-          // Move normalmente sem crescer
-          gameState.snake.unshift(newHead);
-          gameState.snake.pop();
-        }
-      } else {
-        // Movimento normal
-        gameState.snake.unshift(newHead);
-        gameState.snake.pop();
-      }
-    }
-
-    function celebrateSequence() {
-      gameState.isRunning = false;
-      playFanfare();
-      triggerConfetti(120);
-
-      const stars = starsTracker.querySelectorAll('.star-icon');
-      stars.forEach(s => s.classList.add('active'));
-
-      lettersEatenCount.textContent = `Você já pegou ${gameState.totalEaten} letrinhas com muito capricho!`;
-      celebrateModal.classList.remove('hidden');
-
-      speak("Parabéns! Você completou todas as vogais!");
-      gameState.hasWonOnce = true;
-    }
-
-    /* =========================================================
-       RENDERIZAÇÃO NO CANVAS
-       ========================================================= */
-
-    function draw() {
-      const cellSize = canvas.width / GRID_SIZE;
-
-      // Fundo
-      ctx.fillStyle = '#fefce8';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-      // Grade sutil
-      ctx.strokeStyle = '#fef08a';
-      ctx.lineWidth = 1;
-      for (let i = 0; i <= GRID_SIZE; i++) {
-        ctx.beginPath();
-        ctx.moveTo(i * cellSize, 0);
-        ctx.lineTo(i * cellSize, canvas.height);
-        ctx.stroke();
-
-        ctx.beginPath();
-        ctx.moveTo(0, i * cellSize);
-        ctx.lineTo(canvas.width, i * cellSize);
-        ctx.stroke();
-      }
-
-      // Desenhar Itens (Vogais)
-      const now = performance.now();
-      gameState.items.forEach(item => {
-        const cx = item.x * cellSize + cellSize / 2;
-        const cy = item.y * cellSize + cellSize / 2;
-        const baseRadius = cellSize * 0.42;
-        // Pulsação suave individual
-        const pulse = Math.sin(now / 200 + (item.x + item.y)) * 1.5;
-        const r = Math.max(10, baseRadius + pulse);
-
-        // Bolha de fundo
-        ctx.save();
-        ctx.beginPath();
-        ctx.arc(cx, cy, r, 0, Math.PI * 2);
-        ctx.fillStyle = item.color;
-        ctx.shadowColor = 'rgba(0,0,0,0.2)';
-        ctx.shadowBlur = 6;
-        ctx.shadowOffsetY = 3;
-        ctx.fill();
-
-        // Brilho superior
-        ctx.beginPath();
-        ctx.arc(cx - r * 0.3, cy - r * 0.3, r * 0.28, 0, Math.PI * 2);
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.45)';
-        ctx.fill();
-
-        // Letra maiúscula bastão
-        ctx.fillStyle = '#ffffff';
-        ctx.font = `bold ${Math.floor(cellSize * 0.6)}px Fredoka, sans-serif`;
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.shadowColor = 'rgba(0,0,0,0.3)';
-        ctx.shadowBlur = 3;
-        ctx.shadowOffsetY = 1;
-        ctx.fillText(item.letter, cx, cy + 1);
-        ctx.restore();
-      });
-
-      // Desenhar Cobra
-      const snakeLen = gameState.snake.length;
-      for (let i = snakeLen - 1; i >= 0; i--) {
-        const seg = gameState.snake[i];
-        const cx = seg.x * cellSize + cellSize / 2;
-        const cy = seg.y * cellSize + cellSize / 2;
-        const radius = cellSize * 0.42;
-
-        ctx.save();
-        if (i === 0) {
-          // CABEÇA DA COBRA
-          ctx.beginPath();
-          ctx.arc(cx, cy, radius * 1.08, 0, Math.PI * 2);
-          ctx.fillStyle = '#10b981';
-          ctx.fill();
-
-          // Linguinha fofa
-          const dir = gameState.dir;
-          const lx = cx + dir.x * radius * 1.2;
-          const ly = cy + dir.y * radius * 1.2;
-          const tongueFlick = Math.sin(now / 150) > 0;
-          if (tongueFlick) {
-            ctx.beginPath();
-            ctx.moveTo(cx + dir.x * radius * 0.8, cy + dir.y * radius * 0.8);
-            ctx.lineTo(lx, ly);
-            ctx.strokeStyle = '#e11d48';
-            ctx.lineWidth = 3;
-            ctx.lineCap = 'round';
-            ctx.stroke();
-          }
-
-          // Olhos grandes fofos com pupilas olhando na direção
-          const eyeDist = radius * 0.45;
-          let eye1X, eye1Y, eye2X, eye2Y;
-
-          if (dir.x !== 0) {
-            eye1X = cx + dir.x * radius * 0.25;
-            eye1Y = cy - eyeDist;
-            eye2X = cx + dir.x * radius * 0.25;
-            eye2Y = cy + eyeDist;
-          } else {
-            eye1X = cx - eyeDist;
-            eye1Y = cy + dir.y * radius * 0.25;
-            eye2X = cx + eyeDist;
-            eye2Y = cy + dir.y * radius * 0.25;
-          }
-
-          [ { x: eye1X, y: eye1Y }, { x: eye2X, y: eye2Y } ].forEach(pos => {
-            // Esclera branca
-            ctx.beginPath();
-            ctx.arc(pos.x, pos.y, radius * 0.32, 0, Math.PI * 2);
-            ctx.fillStyle = '#ffffff';
-            ctx.fill();
-            ctx.strokeStyle = '#047857';
-            ctx.lineWidth = 1.2;
-            ctx.stroke();
-
-            // Pupila preta voltada para o movimento
-            ctx.beginPath();
-            const pupX = pos.x + dir.x * 2.5;
-            const pupY = pos.y + dir.y * 2.5;
-            ctx.arc(pupX, pupY, radius * 0.17, 0, Math.PI * 2);
-            ctx.fillStyle = '#1e293b';
-            ctx.fill();
-
-            // Ponto de luz branco
-            ctx.beginPath();
-            ctx.arc(pupX - 1, pupY - 1, radius * 0.06, 0, Math.PI * 2);
-            ctx.fillStyle = '#ffffff';
-            ctx.fill();
-          });
-
-        } else {
-          // CORPO DA COBRA
-          ctx.beginPath();
-          ctx.arc(cx, cy, radius * (0.92 - (i / snakeLen) * 0.15), 0, Math.PI * 2);
-          // Alternância suave de tons de verde
-          ctx.fillStyle = i % 2 === 0 ? '#34d399' : '#10b981';
-          ctx.fill();
-
-          // Detalhe de manchinha alegre no dorso
-          ctx.beginPath();
-          ctx.arc(cx, cy, radius * 0.22, 0, Math.PI * 2);
-          ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
-          ctx.fill();
-        }
-        ctx.restore();
-      }
-    }
-
-    function gameLoop(timestamp) {
-      if (gameState.isRunning) {
-        if (!gameState.lastTick) gameState.lastTick = timestamp;
-        const delta = timestamp - gameState.lastTick;
-
-        if (delta >= STEP_INTERVAL) {
-          gameStep();
-          gameState.lastTick = timestamp;
-        }
-      }
-      draw();
-      requestAnimationFrame(gameLoop);
-    }
-
-    /* =========================================================
-       INICIALIZAÇÃO E REINÍCIO DO JOGO
-       ========================================================= */
-
-    function startNewGame(mode = 'easy') {
-      gameState.mode = mode;
-      gameState.snake = [
-        { x: 5, y: 6 },
-        { x: 4, y: 6 },
-        { x: 3, y: 6 }
-      ];
-      gameState.dir = { x: 1, y: 0 };
-      gameState.nextDir = { x: 1, y: 0 };
-      gameState.targetIndex = 0;
-      gameState.lastTick = 0;
-      gameState.isRunning = true;
-
-      setupItems();
-      updateTopUI();
-      startModal.classList.add('hidden');
-      celebrateModal.classList.add('hidden');
-
-      setTimeout(() => {
-        announceTarget();
-      }, 300);
-    }
-
-    /* =========================================================
-       EVENTOS DE CONTROLE (BOTÕES, TECLADO, SWIPE)
-       ========================================================= */
-
-    // Iniciar jogo
-    btnStartGame.addEventListener('click', () => {
-      initAudio();
-      startNewGame('easy');
-    });
-
-    btnPlayAgain.addEventListener('click', () => {
-      initAudio();
-      startNewGame('easy');
-    });
-
-    btnHuntMode.addEventListener('click', () => {
-      initAudio();
-      startNewGame('hunt');
-    });
-
-    // Repetir voz do alvo
-    btnVoice.addEventListener('click', () => {
-      initAudio();
-      announceTarget();
-    });
-
-    // Controles D-Pad
-    const attachDirectionButton = (btn, dx, dy) => {
-      const handler = (e) => {
-        if (e.cancelable) e.preventDefault();
-        initAudio();
-        changeDirection(dx, dy);
-      };
-      btn.addEventListener('pointerdown', handler);
-      btn.addEventListener('touchstart', handler, { passive: false });
-    };
-
-    attachDirectionButton(btnUp, 0, -1);
-    attachDirectionButton(btnDown, 0, 1);
-    attachDirectionButton(btnLeft, -1, 0);
-    attachDirectionButton(btnRight, 1, 0);
-
-    // Teclas do teclado (Desktop)
-    window.addEventListener('keydown', (e) => {
-      initAudio();
-      switch (e.key) {
-        case 'ArrowUp':
-        case 'w':
-        case 'W':
-          e.preventDefault();
-          changeDirection(0, -1);
-          break;
-        case 'ArrowDown':
-        case 's':
-        case 'S':
-          e.preventDefault();
-          changeDirection(0, 1);
-          break;
-        case 'ArrowLeft':
-        case 'a':
-        case 'A':
-          e.preventDefault();
-          changeDirection(-1, 0);
-          break;
-        case 'ArrowRight':
-        case 'd':
-        case 'D':
-          e.preventDefault();
-          changeDirection(1, 0);
-          break;
-      }
-    });
-
-    // Gesto de Swipe no Tabuleiro
-    let touchStartX = 0;
-    let touchStartY = 0;
-
-    boardWrapper.addEventListener('touchstart', (e) => {
-      if (e.touches.length > 0) {
-        touchStartX = e.touches[0].clientX;
-        touchStartY = e.touches[0].clientY;
-      }
-    }, { passive: true });
-
-    boardWrapper.addEventListener('touchend', (e) => {
-      if (e.changedTouches.length === 0) return;
-      const dx = e.changedTouches[0].clientX - touchStartX;
-      const dy = e.changedTouches[0].clientY - touchStartY;
-      const absDx = Math.abs(dx);
-      const absDy = Math.abs(dy);
-
-      // Limiar mínimo de arraste (25px)
-      if (Math.max(absDx, absDy) > 25) {
-        initAudio();
-        if (absDx > absDy) {
-          changeDirection(dx > 0 ? 1 : -1, 0);
-        } else {
-          changeDirection(0, dy > 0 ? 1 : -1);
-        }
-      }
-    }, { passive: true });
-
-    // Ajuste de DPI do canvas para visual ultra nítido
-    function resizeCanvasResolution() {
-      const rect = canvas.getBoundingClientRect();
-      const dpr = Math.min(window.devicePixelRatio || 1, 2);
-      const displayW = rect.width > 0 ? rect.width : (boardWrapper.clientWidth || 340);
-      const displayH = rect.height > 0 ? rect.height : (boardWrapper.clientHeight || 340);
-      const size = Math.floor(Math.min(displayW, displayH) * dpr) || 360;
-      if (canvas.width !== size || canvas.height !== size) {
-        canvas.width = size;
-        canvas.height = size;
-      }
-    }
-
-    window.addEventListener('resize', resizeCanvasResolution);
-    window.addEventListener('orientationchange', () => {
-      setTimeout(resizeCanvasResolution, 100);
-    });
-    document.addEventListener('DOMContentLoaded', resizeCanvasResolution);
-    window.addEventListener('load', resizeCanvasResolution);
-    resizeCanvasResolution();
-
-    // Inicia loop visual
-    requestAnimationFrame(gameLoop);
-  </script>
 <script>
-/* Skip artifact shell — fixed helpers served beside every artifact. */
-(function () {
-  "use strict";
+/* =========================================================
+   A COBRINHA DAS VOGAIS — alfabetização (4-5 anos)
+   Cobra lenta, sem morte, come A→E→I→O→U na ordem certa.
+   ========================================================= */
+const COLS = 12, ROWS = 14;
+const VOGAIS = ['A','E','I','O','U'];
+const NOMES  = {A:'a', E:'é', I:'i', O:'ó', U:'u'};
+const CORES  = {A:'#e74c3c', E:'#2f86eb', I:'#f0b429', O:'#e8752a', U:'#8e44ad'};
+const TICK   = 420;
 
-  var fmt = {
-    num: function (v, opts) { return new Intl.NumberFormat("pt-BR", opts || {}).format(v); },
-    brl: function (v) { return new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(v); },
-    pct: function (v) { return new Intl.NumberFormat("pt-BR", { style: "percent", maximumFractionDigits: 1 }).format(v); }
-  };
+let cobra = [], dir = {x:1,y:0}, dirPendente = null;
+let alvoIdx = 0, comidas = 0, rodando = false, modo = 'facil';
+let letras = [];
+let erroT = 0, cel = 30;
 
-  // axisFmt keeps axis tick labels short (compact notation) so long values
-  // (e.g. full BRL amounts) never clip against the plot edge.
-  function axisFmt(v) {
-    return fmt.num(v, { notation: "compact", maximumFractionDigits: 1 });
-  }
+const $ = s => document.querySelector(s);
+const tela = $('#tela'), ctx = tela.getContext('2d');
 
-  // format accepts a function OR one of the fmt names ("num" | "brl" | "pct").
-  function coerceFormat(spec) {
-    if (typeof spec === "function") return spec;
-    if (typeof spec === "string" && fmt[spec]) return fmt[spec];
-    return function (v) { return fmt.num(v); };
-  }
+// ---- Voz em português ----
+let vozPT = null;
+function acharVoz(){
+  const vs = speechSynthesis.getVoices();
+  vozPT = vs.find(v => /pt[-_]BR/i.test(v.lang)) || vs.find(v => /^pt/i.test(v.lang)) || null;
+}
+if ('speechSynthesis' in window){ acharVoz(); speechSynthesis.onvoiceschanged = acharVoz; }
+function falar(txt){
+  if (!('speechSynthesis' in window)) return;
+  speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(txt);
+  u.lang = 'pt-BR'; u.rate = .95; u.pitch = 1.1;
+  if (vozPT) u.voice = vozPT;
+  speechSynthesis.speak(u);
+}
+function falarLetra(L){ falar(NOMES[L] + '!'); }
+function anunciarAlvo(){
+  const L = VOGAIS[alvoIdx];
+  $('#alvoLetra').textContent = L;
+  $('#alvoLetra').style.color = CORES[L];
+  falar('A cobrinha quer a letra ' + NOMES[L] + '!');
+}
 
-  function accent() {
-    return getComputedStyle(document.documentElement).getPropertyValue("--accent").trim() || "#2563eb";
-  }
-  function mutedColor() {
-    return getComputedStyle(document.documentElement).getPropertyValue("--text-muted").trim() || "#5b6472";
-  }
-  function svgEl(tag, attrs) {
-    var el = document.createElementNS("http://www.w3.org/2000/svg", tag);
-    for (var k in attrs) el.setAttribute(k, attrs[k]);
-    return el;
-  }
-  function frame(el, w, h) {
-    var svg = svgEl("svg", { viewBox: "0 0 " + w + " " + h, role: "img" });
-    el.innerHTML = "";
-    el.appendChild(svg);
-    return svg;
-  }
+// ---- Sons ----
+let audio = null;
+function nota(freq, ini, dur, tipo, vol){
+  const o = audio.createOscillator(), g = audio.createGain();
+  o.type = tipo || 'sine'; o.frequency.value = freq;
+  g.gain.setValueAtTime(vol || .2, audio.currentTime + ini);
+  g.gain.exponentialRampToValueAtTime(.001, audio.currentTime + ini + dur);
+  o.connect(g); g.connect(audio.destination);
+  o.start(audio.currentTime + ini); o.stop(audio.currentTime + ini + dur);
+}
+function somGlup(){ if(audio){ nota(523,0,.09,'triangle',.25); nota(784,.09,.14,'triangle',.25); } }
+function somOps(){ if(audio) nota(196,0,.18,'sine',.18); }
+function somFesta(){ if(audio) [523,659,784,1047].forEach((f,i)=>nota(f,i*.14,.22,'triangle',.22)); }
 
-  // maxOf guards the axis scale: empty values would give -Infinity (truthy,
-  // so "|| 1" can't catch it) and a non-positive max would flip the chart.
-  function maxOf(values) {
-    var m = values.length ? Math.max.apply(null, values) : 0;
-    return m > 0 ? m : 1;
+// ---- Confete e balão ----
+function confete(qtd){
+  const cores = ['#e74c3c','#2f86eb','#f0b429','#e8752a','#8e44ad','#3fae5a'];
+  for (let i=0;i<(qtd||24);i++){
+    const p = document.createElement('div');
+    p.className = 'pedacinho';
+    p.style.left = Math.random()*100 + '%';
+    p.style.background = cores[i%cores.length];
+    p.style.animationDuration = (1 + Math.random()*.8) + 's';
+    p.style.animationDelay = (Math.random()*.3) + 's';
+    $('#confete').appendChild(p);
+    setTimeout(()=>p.remove(), 2500);
   }
+}
+let balaoTimer = null;
+function balao(txt){
+  const b = $('#balaoMsg');
+  b.textContent = txt; b.classList.add('mostrar');
+  clearTimeout(balaoTimer);
+  balaoTimer = setTimeout(()=>b.classList.remove('mostrar'), 1200);
+}
+function pintarEstrelas(){
+  const n = Math.min(comidas, 10);
+  $('#estrelas').textContent = '⭐'.repeat(n) + (comidas>10 ? ' x'+comidas : '');
+}
 
-  // bar(el, {labels:[], values:[], color?, format?}) — vertical bar chart.
-  function bar(el, cfg) {
-    var W = 640, H = 280, padL = 46, padB = 30, padT = 12;
-    var svg = frame(el, W, H);
-    var max = maxOf(cfg.values);
-    var n = cfg.values.length;
-    var plotW = W - padL - 12, plotH = H - padT - padB;
-    var step = plotW / n, bw = Math.min(step * 0.62, 64);
-    var color = cfg.color || accent();
-    var f = coerceFormat(cfg.format);
-    for (var g = 0; g <= 4; g++) {
-      var gy = padT + plotH - (plotH * g) / 4;
-      svg.appendChild(svgEl("line", { x1: padL, y1: gy, x2: W - 12, y2: gy, stroke: "currentColor", "stroke-opacity": 0.08 }));
-      var lbl = svgEl("text", { x: padL - 8, y: gy + 4, "text-anchor": "end", "font-size": 10, fill: mutedColor() });
-      lbl.textContent = axisFmt((max * g) / 4);
-      svg.appendChild(lbl);
+// ---- Tabuleiro ----
+function celulaLivre(letra){
+  while (true){
+    const x = Math.floor(Math.random()*COLS), y = Math.floor(Math.random()*ROWS);
+    const naCobra = cobra.some(s => s.x===x && s.y===y);
+    const naLetra = letras.some(l => l.x===x && l.y===y);
+    const perto = Math.abs(cobra[0].x-x) + Math.abs(cobra[0].y-y) < 3;
+    if (!naCobra && !naLetra && !perto) return {x, y, letra};
+  }
+}
+function colocarLetras(){
+  letras = [];
+  if (modo === 'facil') letras.push(celulaLivre(VOGAIS[alvoIdx]));
+  else VOGAIS.forEach(v => letras.push(celulaLivre(v)));
+}
+
+// ---- Cobra ----
+function novaCobra(){
+  for (let y=2; y<ROWS-2; y++){
+    for (let x=1; x<COLS-4; x++){
+      const livre = [0,1,2].every(i => !letras.some(l=>l.x===x+i && l.y===y));
+      if (livre){ cobra=[{x:x+2,y},{x:x+1,y},{x,y}]; dir={x:1,y:0}; dirPendente=null; return; }
     }
-    cfg.values.forEach(function (v, i) {
-      var bh = Math.max(0, (v / max) * plotH);
-      var x = padL + i * step + (step - bw) / 2;
-      var y = padT + plotH - bh;
-      var r = svgEl("rect", { x: x, y: y, width: bw, height: bh, rx: 4, fill: color });
-      var t = svgEl("title", {});
-      t.textContent = cfg.labels[i] + ": " + f(v);
-      r.appendChild(t);
-      svg.appendChild(r);
-      var tx = svgEl("text", { x: x + bw / 2, y: H - 10, "text-anchor": "middle", "font-size": 11, fill: mutedColor() });
-      tx.textContent = cfg.labels[i];
-      svg.appendChild(tx);
-    });
   }
+  cobra=[{x:5,y:7},{x:4,y:7},{x:3,y:7}]; dir={x:1,y:0}; dirPendente=null;
+}
+function encolher(){
+  somOps(); erroT = performance.now();
+  novaCobra();
+}
 
-  // line(el, {labels:[], values:[], color?, format?}) — single-series line.
-  function line(el, cfg) {
-    var W = 640, H = 280, padL = 46, padB = 30, padT = 12;
-    var svg = frame(el, W, H);
-    var max = maxOf(cfg.values);
-    var n = cfg.values.length;
-    var plotW = W - padL - 16, plotH = H - padT - padB;
-    var color = cfg.color || accent();
-    var f = coerceFormat(cfg.format);
-    for (var g = 0; g <= 4; g++) {
-      var gy = padT + plotH - (plotH * g) / 4;
-      svg.appendChild(svgEl("line", { x1: padL, y1: gy, x2: W - 16, y2: gy, stroke: "currentColor", "stroke-opacity": 0.08 }));
-      var lbl = svgEl("text", { x: padL - 8, y: gy + 4, "text-anchor": "end", "font-size": 10, fill: mutedColor() });
-      lbl.textContent = axisFmt((max * g) / 4);
-      svg.appendChild(lbl);
+// ---- Passo da cobra ----
+function passo(){
+  if (dirPendente){
+    const reverso = dirPendente.x === -dir.x && dirPendente.y === -dir.y;
+    if (!reverso) dir = dirPendente;
+    dirPendente = null;
+  }
+  const nx = (cobra[0].x + dir.x + COLS) % COLS;
+  const ny = (cobra[0].y + dir.y + ROWS) % ROWS;
+  if (cobra.some(s => s.x===nx && s.y===ny)){ encolher(); return; }
+  cobra.unshift({x:nx, y:ny});
+  let cresceu = false;
+  const li = letras.findIndex(l => l.x===nx && l.y===ny);
+  if (li >= 0){
+    const l = letras[li];
+    if (l.letra === VOGAIS[alvoIdx]){
+      cresceu = true; comidas++; pintarEstrelas();
+      somGlup(); confete(); balao('É o ' + l.letra + '!'); falarLetra(l.letra);
+      letras.splice(li,1); alvoIdx++;
+      if (alvoIdx >= VOGAIS.length){ completou(); return; }
+      if (modo === 'facil') letras.push(celulaLivre(VOGAIS[alvoIdx]));
+      anunciarAlvo();
+    } else {
+      somOps(); erroT = performance.now();
     }
-    var pts = cfg.values.map(function (v, i) {
-      var x = padL + (n === 1 ? plotW / 2 : (plotW * i) / (n - 1));
-      var y = padT + plotH - (v / max) * plotH;
-      return [x, y];
-    });
-    var d = pts.map(function (p, i) { return (i ? "L" : "M") + p[0].toFixed(1) + " " + p[1].toFixed(1); }).join(" ");
-    svg.appendChild(svgEl("path", { d: d, fill: "none", stroke: color, "stroke-width": 2, "stroke-linejoin": "round" }));
-    pts.forEach(function (p, i) {
-      var c = svgEl("circle", { cx: p[0], cy: p[1], r: 3.5, fill: color });
-      var t = svgEl("title", {});
-      t.textContent = cfg.labels[i] + ": " + f(cfg.values[i]);
-      c.appendChild(t);
-      svg.appendChild(c);
-      var tx = svgEl("text", { x: p[0], y: H - 10, "text-anchor": "middle", "font-size": 11, fill: mutedColor() });
-      tx.textContent = cfg.labels[i];
-      svg.appendChild(tx);
-    });
   }
+  if (!cresceu) cobra.pop();
+}
 
-  // donut(el, {labels:[], values:[], colors?}) — donut with center total.
-  function donut(el, cfg) {
-    var W = 320, H = 280, cx = W / 2, cy = H / 2, R = 92, r = 58;
-    var svg = frame(el, W, H);
-    var total = cfg.values.reduce(function (a, b) { return a + b; }, 0) || 1;
-    var palette = cfg.colors || [accent(), "#1baf7a", "#eda100", "#e34948", "#4a3aa7", "#e87ba4"];
-    var a0 = -Math.PI / 2;
-    cfg.values.forEach(function (v, i) {
-      var a1 = a0 + (v / total) * Math.PI * 2;
-      var large = a1 - a0 > Math.PI ? 1 : 0;
-      var p = ["M", cx + R * Math.cos(a0), cy + R * Math.sin(a0),
-        "A", R, R, 0, large, 1, cx + R * Math.cos(a1), cy + R * Math.sin(a1),
-        "L", cx + r * Math.cos(a1), cy + r * Math.sin(a1),
-        "A", r, r, 0, large, 0, cx + r * Math.cos(a0), cy + r * Math.sin(a0), "Z"].join(" ");
-      var path = svgEl("path", { d: p, fill: palette[i % palette.length] });
-      var t = svgEl("title", {});
-      t.textContent = cfg.labels[i] + ": " + fmt.num(v) + " (" + fmt.pct(v / total) + ")";
-      path.appendChild(t);
-      svg.appendChild(path);
-      a0 = a1;
-    });
-    var center = svgEl("text", { x: cx, y: cy + 5, "text-anchor": "middle", "font-size": 20, "font-weight": 650, fill: "currentColor" });
-    center.textContent = fmt.num(total);
-    svg.appendChild(center);
+// ---- Fim ----
+function completou(){
+  rodando = false;
+  somFesta(); confete(60);
+  $('#btnCaca').classList.remove('bloqueado');
+  $('#resumo').textContent = 'Você comeu ' + comidas + ' letra' + (comidas===1?'':'s') + '! 🏆';
+  $('#telaFim').classList.remove('escondido');
+  falar('Parabéns! Você completou as vogais!');
+}
+function reiniciar(novoModo){
+  modo = novoModo || 'facil';
+  alvoIdx = 0; comidas = 0; pintarEstrelas();
+  novaCobra(); colocarLetras();
+  $('#telaFim').classList.add('escondido');
+  rodando = true; ultimoTick = performance.now();
+  anunciarAlvo();
+}
+
+// ---- Botões ----
+$('#btnJogar').addEventListener('click', ()=>{
+  if (!audio){ try{ audio = new (window.AudioContext||window.webkitAudioContext)(); }catch(e){} }
+  $('#telaInicio').classList.add('escondido');
+  alvoIdx = 0; comidas = 0; pintarEstrelas();
+  novaCobra(); colocarLetras();
+  rodando = true; ultimoTick = performance.now();
+  anunciarAlvo();
+});
+$('#btnDeNovo').addEventListener('click', ()=>reiniciar('facil'));
+$('#btnCaca').addEventListener('click', ()=>reiniciar('caca'));
+$('#btnVoz').addEventListener('click', ()=>falar('A cobrinha quer a letra ' + NOMES[VOGAIS[alvoIdx]] + '!'));
+
+// ---- Direções: botões, swipe e teclado (toque universal) ----
+function setDir(x,y){
+  if (!rodando) return;
+  if (dir.x === x && dir.y === y) return;
+  dirPendente = {x,y};
+}
+function ligarBotao(id, x, y){
+  const b = document.querySelector(id);
+  const vai = e => { if(e.cancelable) e.preventDefault(); setDir(x,y); };
+  b.addEventListener('touchstart', vai, {passive:false});
+  b.addEventListener('pointerdown', vai);
+  b.addEventListener('mousedown', vai);
+  b.addEventListener('click', vai);
+}
+ligarBotao('#sUp', 0,-1); ligarBotao('#sDown', 0,1);
+ligarBotao('#sLeft', -1,0); ligarBotao('#sRight', 1,0);
+window.addEventListener('keydown', e=>{
+  if (e.key==='ArrowUp'||e.key==='w') setDir(0,-1);
+  else if (e.key==='ArrowDown'||e.key==='s') setDir(0,1);
+  else if (e.key==='ArrowLeft'||e.key==='a') setDir(-1,0);
+  else if (e.key==='ArrowRight'||e.key==='d') setDir(1,0);
+});
+let toqueIni = null;
+document.addEventListener('touchstart', e=>{ toqueIni = {x:e.touches[0].clientX, y:e.touches[0].clientY}; }, {passive:true});
+document.addEventListener('touchmove', e=>{
+  if (!toqueIni || !rodando) return;
+  const dx = e.touches[0].clientX - toqueIni.x, dy = e.touches[0].clientY - toqueIni.y;
+  if (Math.abs(dx) < 24 && Math.abs(dy) < 24) return;
+  if (Math.abs(dx) > Math.abs(dy)) setDir(dx>0?1:-1, 0); else setDir(0, dy>0?1:-1);
+  toqueIni = {x:e.touches[0].clientX, y:e.touches[0].clientY};
+}, {passive:true});
+
+// ---- Desenho ----
+function rrect(x,y,w,h,r){
+  ctx.beginPath();
+  if (ctx.roundRect) ctx.roundRect(x,y,w,h,r);
+  else {
+    ctx.moveTo(x+r,y); ctx.arcTo(x+w,y,x+w,y+h,r); ctx.arcTo(x+w,y+h,x,y+h,r);
+    ctx.arcTo(x,y+h,x,y,r); ctx.arcTo(x,y,x+w,y,r);
   }
+  ctx.fill();
+}
+function desenhar(agora){
+  const W = COLS*cel, H = ROWS*cel;
+  ctx.clearRect(0,0,W,H);
+  ctx.strokeStyle = '#f0e6c8'; ctx.lineWidth = 1;
+  for(let i=1;i<COLS;i++){ ctx.beginPath(); ctx.moveTo(i*cel,0); ctx.lineTo(i*cel,H); ctx.stroke(); }
+  for(let j=1;j<ROWS;j++){ ctx.beginPath(); ctx.moveTo(0,j*cel); ctx.lineTo(W,j*cel); ctx.stroke(); }
+  ctx.textAlign='center'; ctx.textBaseline='middle';
+  letras.forEach(l=>{
+    const cx = l.x*cel + cel/2, cy = l.y*cel + cel/2;
+    const r = cel*0.40*(1 + Math.sin(agora/300 + l.x)*0.06);
+    ctx.fillStyle = CORES[l.letra];
+    ctx.beginPath(); ctx.arc(cx,cy,r,0,Math.PI*2); ctx.fill();
+    ctx.fillStyle = '#fff';
+    ctx.font = '700 ' + Math.round(cel*0.46) + 'px Fredoka, sans-serif';
+    ctx.fillText(l.letra, cx, cy + cel*0.02);
+  });
+  let off = 0;
+  if (agora - erroT < 350) off = Math.sin((agora-erroT)/30)*3;
+  cobra.forEach((s,i)=>{
+    ctx.fillStyle = i===0 ? '#2c7a3f' : '#3fae5a';
+    rrect(s.x*cel+1+off, s.y*cel+1, cel-2, cel-2, i===0?9:7);
+    if (i===0){
+      const mx = s.x*cel + cel/2 + off, my = s.y*cel + cel/2;
+      const px = -dir.y, py = dir.x;
+      [[1],[-1]].forEach(([lado])=>{
+        const ex = mx + px*lado*3.5 + dir.x*2.5;
+        const ey = my + py*lado*3.5 + dir.y*2.5;
+        ctx.fillStyle='#fff'; ctx.beginPath(); ctx.arc(ex,ey,3.2,0,Math.PI*2); ctx.fill();
+        ctx.fillStyle='#222'; ctx.beginPath(); ctx.arc(ex+dir.x,ey+dir.y,1.6,0,Math.PI*2); ctx.fill();
+      });
+    }
+  });
+}
 
-  window.skipShell = { fmt: fmt };
-  window.skipChart = { bar: bar, line: line, donut: donut };
-})();
+// ---- Tamanho ----
+function redimensionar(){
+  const area = $('#areaJogo');
+  const dpr = window.devicePixelRatio || 1;
+  const w = area.clientWidth - 24, h = area.clientHeight - 24;
+  cel = Math.max(14, Math.floor(Math.min(w/COLS, h/ROWS)));
+  const W = COLS*cel, H = ROWS*cel;
+  tela.style.width = W+'px'; tela.style.height = H+'px';
+  tela.width = Math.round(W*dpr); tela.height = Math.round(H*dpr);
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+}
+window.addEventListener('resize', redimensionar);
 
+// ---- Loop ----
+let ultimoTick = 0;
+function loop(agora){
+  requestAnimationFrame(loop);
+  if (document.hidden){ ultimoTick = agora; return; }
+  if (rodando && agora - ultimoTick >= TICK){ ultimoTick = agora; passo(); }
+  desenhar(agora);
+}
+redimensionar();
+novaCobra(); colocarLetras();
+$('#alvoLetra').textContent = 'A'; $('#alvoLetra').style.color = CORES.A;
+requestAnimationFrame(loop);
 </script>
 </body>
 </html>
