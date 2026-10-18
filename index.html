@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
-<title>🐍 A Cobrinha das Vogais</title>
+<title>🐍 A Cobrinha das Vogais — Fases</title>
 <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -26,17 +26,23 @@ canvas{display:block;background:#fffdf3;border-radius:14px;border:4px solid #e7d
 .seta{font-size:22px;padding:8px 0;background:#fff;border:3px solid #3fae5a;color:#2c7a3f;border-radius:14px;cursor:pointer;box-shadow:0 3px 0 #2c7a3f;touch-action:manipulation;-webkit-user-select:none;user-select:none}
 .seta:active{transform:translateY(2px);box-shadow:0 1px 0 #2c7a3f}
 #sUp{grid-column:2;grid-row:1}#sLeft{grid-column:1;grid-row:2}#sDown{grid-column:2;grid-row:2}#sRight{grid-column:3;grid-row:2}
-.overlay{position:fixed;inset:0;background:rgba(253,243,216,.97);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;text-align:center;padding:24px;z-index:10}
+.overlay{position:fixed;inset:0;background:rgba(253,243,216,.97);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;text-align:center;padding:24px;z-index:10}
 .overlay.escondido{display:none}
 .overlay h1{font-size:26px;color:#2c7a3f}
 .overlay p{font-size:18px;color:#6b5b2a}
 .overlay button{font-family:inherit;font-size:22px;font-weight:600;padding:12px 28px;border-radius:18px;border:none;cursor:pointer;background:#3fae5a;color:#fff;box-shadow:0 5px 0 #2c7a3f;touch-action:manipulation}
 .overlay button:active{transform:translateY(3px);box-shadow:0 2px 0 #2c7a3f}
+.faseBtn{display:flex;flex-direction:column;align-items:center;gap:2px;width:100%;max-width:340px;padding:12px 18px}
+.faseBtn small{font-size:14px;font-weight:500;opacity:.85}
+.faseBtn.azul{background:#2f86eb;box-shadow:0 5px 0 #1c5fa8}
+.faseBtn.azul:active{box-shadow:0 2px 0 #1c5fa8}
+.faseBtn.bloqueado{opacity:.45;pointer-events:none}
+.voltar{background:transparent !important;color:#6b5b2a !important;box-shadow:none !important;font-size:17px !important;padding:6px 14px !important}
 #btnCaca{background:#f2b418;color:#6b4b00;box-shadow:0 5px 0 #b98a0a}
-#btnCaca.bloqueado{opacity:.5;pointer-events:none}
+#btnMenu2{background:#fff;color:#6b5b2a;box-shadow:0 5px 0 #d8c58a}
 #medalha{font-size:72px;animation:pulsa 1s infinite alternate}
 @keyframes pulsa{from{transform:scale(1)}to{transform:scale(1.15)}}
-.versao{font-size:12px;color:#c4b268;margin-top:4px}
+.versao{font-size:12px;color:#c4b268;margin-top:2px}
 </style>
 </head>
 <body>
@@ -59,39 +65,97 @@ canvas{display:block;background:#fffdf3;border-radius:14px;border:4px solid #e7d
   </div>
 </div>
 
-<div id="telaInicio" class="overlay">
+<div id="menuFases" class="overlay">
   <h1>🐍 A Cobrinha das Vogais</h1>
-  <p>Coma as vogais na ordem certa:<br><b>A → E → I → O → U</b></p>
-  <button id="btnJogar" onclick="jogar()">▶ Jogar</button>
-  <p class="versao">versão 3</p>
+  <p>Escolha a fase:</p>
+  <button class="faseBtn" onclick="abrirFase(0)">🟢 Fase 1 · Vogais <span id="medVog"></span><small>A → E → I → O → U</small></button>
+  <button class="faseBtn azul" onclick="abrirBlocos()">🔵 Fase 2 · Consoantes <span id="medConso"></span><small>3 blocos de letrinhas</small></button>
+  <p class="versao">versão 4</p>
+</div>
+
+<div id="menuBlocos" class="overlay escondido">
+  <h1>🔵 Consoantes</h1>
+  <p>Escolha o bloco:</p>
+  <button class="faseBtn azul" id="btnB1" onclick="abrirBloco(1)">📦 Bloco 1 <span id="medB1"></span><small>M → P → S → T → B</small></button>
+  <button class="faseBtn azul" id="btnB2" onclick="abrirBloco(2)">📦 Bloco 2 <span id="medB2"></span><small>L → N → D → C → F</small></button>
+  <button class="faseBtn azul" id="btnB3" onclick="abrirBloco(3)">📦 Bloco 3 <span id="medB3"></span><small>V → R → G → H → J</small></button>
+  <button class="voltar" onclick="voltarMenu()">← Voltar</button>
 </div>
 
 <div id="telaFim" class="overlay escondido">
   <div id="medalha">🏆</div>
-  <h1>🎉 Você completou as vogais!</h1>
+  <h1 id="tituloFim">🎉 Você completou!</h1>
   <p id="resumo"></p>
-  <button id="btnDeNovo" onclick="reiniciar('facil')">Jogar de novo</button>
-  <button id="btnCaca" class="bloqueado" onclick="reiniciar('caca')">Modo caça 🔍</button>
+  <button id="btnDeNovo" onclick="jogarDeNovo()">Jogar de novo</button>
+  <button id="btnCaca" onclick="modoCaca()">Modo caça 🔍</button>
+  <button id="btnMenu2" onclick="voltarMenu()">🏠 Menu de fases</button>
 </div>
 
 <script>
 /* =========================================================
-   A COBRINHA DAS VOGAIS v3 — alfabetização (4-5 anos)
-   Cobra lenta, sem morte, come A→E→I→O→U na ordem certa.
+   A COBRINHA DAS VOGAIS v4 — alfabetização (4-5 anos)
+   Fase 1: Vogais (A→E→I→O→U)
+   Fase 2: Consoantes em 3 blocos, com voz + palavra.
+   Cobra lenta, sem morte, progresso salvo no aparelho.
    ========================================================= */
 const COLS = 10, ROWS = 12;
-const VOGAIS = ['A','E','I','O','U'];
-const NOMES  = {A:'a', E:'é', I:'i', O:'ó', U:'u'};
-const CORES  = {A:'#e74c3c', E:'#2f86eb', I:'#f0b429', O:'#e8752a', U:'#8e44ad'};
-const TICK   = 420;
+const TICK = 420;
+
+const GRUPOS = [
+  { id:'vogais', bloco:0, letras:[
+    {l:'A', cor:'#e74c3c', fala:'a'},
+    {l:'E', cor:'#2f86eb', fala:'é'},
+    {l:'I', cor:'#f0b429', fala:'i'},
+    {l:'O', cor:'#e8752a', fala:'ó'},
+    {l:'U', cor:'#8e44ad', fala:'u'}
+  ]},
+  { id:'b1', bloco:1, letras:[
+    {l:'M', cor:'#16a085', fala:'M de MACACO'},
+    {l:'P', cor:'#d35400', fala:'P de PATO'},
+    {l:'S', cor:'#2980b9', fala:'S de SAPO'},
+    {l:'T', cor:'#c0392b', fala:'T de TATU'},
+    {l:'B', cor:'#27ae60', fala:'B de BOLA'}
+  ]},
+  { id:'b2', bloco:2, letras:[
+    {l:'L', cor:'#8e44ad', fala:'L de LEÃO'},
+    {l:'N', cor:'#e67e22', fala:'N de NAVIO'},
+    {l:'D', cor:'#2f86eb', fala:'D de DADO'},
+    {l:'C', cor:'#c0392b', fala:'C de CASA'},
+    {l:'F', cor:'#16a085', fala:'F de FACA'}
+  ]},
+  { id:'b3', bloco:3, letras:[
+    {l:'V', cor:'#16a085', fala:'V de VACA'},
+    {l:'R', cor:'#e74c3c', fala:'R de RATO'},
+    {l:'G', cor:'#27ae60', fala:'G de GATO'},
+    {l:'H', cor:'#8e44ad', fala:'H de HOJE'},
+    {l:'J', cor:'#f39c12', fala:'J de JACARÉ'}
+  ]}
+];
 
 let cobra = [], dir = {x:1,y:0}, dirPendente = null;
-let alvoIdx = 0, comidas = 0, rodando = false, modo = 'facil';
+let grupo = GRUPOS[0], alvoIdx = 0, comidas = 0, rodando = false, modo = 'facil';
 let letras = [];
 let erroT = 0, cel = 30;
 
 const $ = s => document.querySelector(s);
 const tela = $('#tela'), ctx = tela.getContext('2d');
+
+// ---- Progresso salvo ----
+let prog = { vogais:false, blocos:[false,false,false] };
+try{
+  const s = localStorage.getItem('cobrinhaProgresso');
+  if (s) prog = Object.assign(prog, JSON.parse(s));
+}catch(e){}
+function salvarProg(){ try{ localStorage.setItem('cobrinhaProgresso', JSON.stringify(prog)); }catch(e){} }
+function renderMenus(){
+  $('#medVog').textContent = prog.vogais ? '🏆' : '';
+  $('#medConso').textContent = prog.blocos.every(b=>b) ? '🏆' : (prog.blocos.some(b=>b) ? '🟡' : '');
+  $('#medB1').textContent = prog.blocos[0] ? '🏆' : '';
+  $('#medB2').textContent = prog.blocos[1] ? '🏆' : (prog.blocos[0] ? '' : '🔒');
+  $('#medB3').textContent = prog.blocos[2] ? '🏆' : (prog.blocos[1] ? '' : '🔒');
+  $('#btnB2').classList.toggle('bloqueado', !prog.blocos[0]);
+  $('#btnB3').classList.toggle('bloqueado', !prog.blocos[1]);
+}
 
 // ---- Voz em português ----
 let vozPT = null;
@@ -108,17 +172,17 @@ function falar(txt){
   if (vozPT) u.voice = vozPT;
   speechSynthesis.speak(u);
 }
-function falarLetra(L){ falar(NOMES[L] + '!'); }
-function falarAlvo(){ falar('A cobrinha quer a letra ' + NOMES[VOGAIS[alvoIdx]] + '!'); }
+function atual(){ return grupo.letras[alvoIdx]; }
+function falarAlvo(){ falar('A cobrinha quer a letra ' + atual().fala + '!'); }
 function anunciarAlvo(){
-  const L = VOGAIS[alvoIdx];
-  $('#alvoLetra').textContent = L;
-  $('#alvoLetra').style.color = CORES[L];
+  $('#alvoLetra').textContent = atual().l;
+  $('#alvoLetra').style.color = atual().cor;
   falarAlvo();
 }
 
 // ---- Sons ----
 let audio = null;
+function garantirAudio(){ if (!audio){ try{ audio = new (window.AudioContext||window.webkitAudioContext)(); }catch(e){} } }
 function nota(freq, ini, dur, tipo, vol){
   const o = audio.createOscillator(), g = audio.createGain();
   o.type = tipo || 'sine'; o.frequency.value = freq;
@@ -158,35 +222,32 @@ function pintarEstrelas(){
 }
 
 // ---- Tabuleiro ----
-function celulaLivre(letra){
+function celulaLivre(l){
   while (true){
     const x = Math.floor(Math.random()*COLS), y = Math.floor(Math.random()*ROWS);
     const naCobra = cobra.some(s => s.x===x && s.y===y);
-    const naLetra = letras.some(l => l.x===x && l.y===y);
+    const naLetra = letras.some(t => t.x===x && t.y===y);
     const perto = Math.abs(cobra[0].x-x) + Math.abs(cobra[0].y-y) < 3;
-    if (!naCobra && !naLetra && !perto) return {x, y, letra};
+    if (!naCobra && !naLetra && !perto) return {x, y, l:l.l, cor:l.cor};
   }
 }
 function colocarLetras(){
   letras = [];
-  if (modo === 'facil') letras.push(celulaLivre(VOGAIS[alvoIdx]));
-  else VOGAIS.forEach(v => letras.push(celulaLivre(v)));
+  if (modo === 'facil') letras.push(celulaLivre(atual()));
+  else grupo.letras.forEach(v => letras.push(celulaLivre(v)));
 }
 
 // ---- Cobra ----
 function novaCobra(){
   for (let y=2; y<ROWS-2; y++){
     for (let x=1; x<COLS-4; x++){
-      const livre = [0,1,2].every(i => !letras.some(l=>l.x===x+i && l.y===y));
+      const livre = [0,1,2].every(i => !letras.some(t=>t.x===x+i && t.y===y));
       if (livre){ cobra=[{x:x+2,y},{x:x+1,y},{x,y}]; dir={x:1,y:0}; dirPendente=null; return; }
     }
   }
   cobra=[{x:5,y:6},{x:4,y:6},{x:3,y:6}]; dir={x:1,y:0}; dirPendente=null;
 }
-function encolher(){
-  somOps(); erroT = performance.now();
-  novaCobra();
-}
+function encolher(){ somOps(); erroT = performance.now(); novaCobra(); }
 
 // ---- Passo da cobra ----
 function passo(){
@@ -200,44 +261,56 @@ function passo(){
   if (cobra.some(s => s.x===nx && s.y===ny)){ encolher(); return; }
   cobra.unshift({x:nx, y:ny});
   let cresceu = false;
-  const li = letras.findIndex(l => l.x===nx && l.y===ny);
+  const li = letras.findIndex(t => t.x===nx && t.y===ny);
   if (li >= 0){
-    const l = letras[li];
-    if (l.letra === VOGAIS[alvoIdx]){
+    const t = letras[li];
+    if (t.l === atual().l){
       cresceu = true; comidas++; pintarEstrelas();
-      somGlup(); confete(); balao('É o ' + l.letra + '!'); falarLetra(l.letra);
+      somGlup(); confete(); balao('É o ' + t.l + '!'); falar(atual().fala + '!');
       letras.splice(li,1); alvoIdx++;
-      if (alvoIdx >= VOGAIS.length){ completou(); return; }
-      if (modo === 'facil') letras.push(celulaLivre(VOGAIS[alvoIdx]));
+      if (alvoIdx >= grupo.letras.length){ completou(); return; }
+      if (modo === 'facil') letras.push(celulaLivre(atual()));
       anunciarAlvo();
-    } else {
-      somOps(); erroT = performance.now();
-    }
+    } else { somOps(); erroT = performance.now(); }
   }
   if (!cresceu) cobra.pop();
 }
 
-// ---- Fim ----
+// ---- Fim / navegação ----
 function completou(){
   rodando = false;
   somFesta(); confete(60);
-  $('#btnCaca').classList.remove('bloqueado');
-  $('#resumo').textContent = 'Você comeu ' + comidas + ' letra' + (comidas===1?'':'s') + '! 🏆';
+  if (grupo.id === 'vogais') prog.vogais = true;
+  else prog.blocos[grupo.bloco-1] = true;
+  salvarProg();
+  $('#tituloFim').textContent = grupo.id==='vogais' ? '🎉 Você completou as vogais!' :
+    (grupo.bloco===3 ? '🎉 Você completou as consoantes!' : '🎉 Bloco ' + grupo.bloco + ' concluído!');
+  $('#resumo').textContent = 'Você comeu ' + comidas + ' letrinha' + (comidas===1?'':'s') + '! 🏆';
   $('#telaFim').classList.remove('escondido');
-  falar('Parabéns! Você completou as vogais!');
+  falar('Parabéns!');
 }
-function reiniciar(novoModo){
-  modo = novoModo || 'facil';
+function iniciarGrupo(g, m){
+  garantirAudio();
+  grupo = g; modo = m || 'facil';
   alvoIdx = 0; comidas = 0; pintarEstrelas();
-  novaCobra(); colocarLetras();
+  $('#menuFases').classList.add('escondido');
+  $('#menuBlocos').classList.add('escondido');
   $('#telaFim').classList.add('escondido');
+  novaCobra(); colocarLetras();
   rodando = true; ultimoTick = performance.now();
   anunciarAlvo();
 }
-function comecar(){
-  if (!audio){ try{ audio = new (window.AudioContext||window.webkitAudioContext)(); }catch(e){} }
-  $('#telaInicio').classList.add('escondido');
-  reiniciar('facil');
+function abrirFase(i){ iniciarGrupo(GRUPOS[i], 'facil'); }
+function abrirBlocos(){ $('#menuFases').classList.add('escondido'); renderMenus(); $('#menuBlocos').classList.remove('escondido'); }
+function abrirBloco(n){ iniciarGrupo(GRUPOS[n], 'facil'); }
+function jogarDeNovo(){ iniciarGrupo(grupo, 'facil'); }
+function modoCaca(){ iniciarGrupo(grupo, 'caca'); }
+function voltarMenu(){
+  rodando = false;
+  $('#menuBlocos').classList.add('escondido');
+  $('#telaFim').classList.add('escondido');
+  renderMenus();
+  $('#menuFases').classList.remove('escondido');
 }
 
 // ---- Direções (função global — usada pelo onclick dos botões) ----
@@ -246,7 +319,6 @@ function setDir(x,y){
   if (dir.x === x && dir.y === y) return;
   dirPendente = {x,y};
 }
-// Camada extra de ouvintes (para além do onclick embutido)
 function ligarBotao(id, x, y){
   const b = document.querySelector(id);
   const vai = e => { if(e.cancelable) e.preventDefault(); setDir(x,y); };
@@ -256,7 +328,6 @@ function ligarBotao(id, x, y){
 }
 ligarBotao('#sUp', 0,-1); ligarBotao('#sDown', 0,1);
 ligarBotao('#sLeft', -1,0); ligarBotao('#sRight', 1,0);
-$('#btnJogar').addEventListener('click', comecar);
 window.addEventListener('keydown', e=>{
   if (e.key==='ArrowUp'||e.key==='w') setDir(0,-1);
   else if (e.key==='ArrowDown'||e.key==='s') setDir(0,1);
@@ -291,19 +362,19 @@ function desenhar(agora){
   for(let j=1;j<ROWS;j++){ ctx.beginPath(); ctx.moveTo(0,j*cel); ctx.lineTo(W,j*cel); ctx.stroke(); }
   ctx.textAlign='center'; ctx.textBaseline='middle';
   ctx.font = '700 ' + Math.round(cel*0.58) + 'px Fredoka, sans-serif';
-  letras.forEach(l=>{
-    const cx = l.x*cel + cel/2, cy = l.y*cel + cel/2;
-    const r = cel*0.42*(1 + Math.sin(agora/300 + l.x)*0.05);
-    if (l.letra === VOGAIS[alvoIdx] && rodando){
+  letras.forEach(t=>{
+    const cx = t.x*cel + cel/2, cy = t.y*cel + cel/2;
+    const r = cel*0.42*(1 + Math.sin(agora/300 + t.x)*0.05);
+    if (t.l === atual().l && rodando){
       ctx.strokeStyle = '#f2b418'; ctx.lineWidth = 3;
       ctx.beginPath(); ctx.arc(cx,cy,r+4,0,Math.PI*2); ctx.stroke();
     }
-    ctx.fillStyle = CORES[l.letra];
+    ctx.fillStyle = t.cor;
     ctx.beginPath(); ctx.arc(cx,cy,r,0,Math.PI*2); ctx.fill();
     ctx.lineWidth = 3; ctx.strokeStyle = 'rgba(0,0,0,.30)';
-    ctx.strokeText(l.letra, cx, cy + cel*0.02);
+    ctx.strokeText(t.l, cx, cy + cel*0.02);
     ctx.fillStyle = '#fff';
-    ctx.fillText(l.letra, cx, cy + cel*0.02);
+    ctx.fillText(t.l, cx, cy + cel*0.02);
   });
   let off = 0;
   if (agora - erroT < 350) off = Math.sin((agora-erroT)/30)*3;
@@ -345,8 +416,8 @@ function loop(agora){
   desenhar(agora);
 }
 redimensionar();
-novaCobra(); colocarLetras();
-$('#alvoLetra').textContent = 'A'; $('#alvoLetra').style.color = CORES.A;
+novaCobra();
+renderMenus();
 requestAnimationFrame(loop);
 </script>
 </body>
