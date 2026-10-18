@@ -4,6 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <title>🐍 A Cobrinha das Vogais — Fases</title>
+<meta property="og:title" content="🐍 A Cobrinha das Vogais — uma criação 52IA">
+<meta property="og:description" content="Brincadeira gratuita de exploração das letras para crianças de 4 a 5 anos. Sem cadastro, sem anúncios.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://cassianobolonha-droid.github.io/cobrinha-das-vogais/">
 <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -13,7 +17,7 @@ header{width:100%;max-width:480px;display:flex;align-items:center;justify-conten
 #alvo{background:#fff;border:3px solid #f2b418;border-radius:18px;padding:3px 12px;display:flex;align-items:center;gap:8px;box-shadow:0 3px 0 rgba(0,0,0,.08)}
 #alvoTxt{font-size:15px;color:#6b5b2a;font-weight:600}
 #alvoLetra{font-size:30px;font-weight:700;min-width:36px;text-align:center}
-#btnVoz{font-size:24px;background:#fff;border:3px solid #f2b418;border-radius:14px;padding:5px 9px;cursor:pointer;touch-action:manipulation}
+.btnTopo{font-size:24px;background:#fff;border:3px solid #f2b418;border-radius:14px;padding:5px 9px;cursor:pointer;touch-action:manipulation}
 #estrelas{font-size:16px;letter-spacing:2px;min-height:20px;text-align:center;width:100%;max-width:480px}
 #areaJogo{position:relative;flex:1;display:flex;align-items:center;justify-content:center;width:100%}
 canvas{display:block;background:#fffdf3;border-radius:14px;border:4px solid #e7d9a8;box-shadow:0 4px 0 rgba(0,0,0,.06);margin:0 auto}
@@ -26,7 +30,7 @@ canvas{display:block;background:#fffdf3;border-radius:14px;border:4px solid #e7d
 .seta{font-size:22px;padding:8px 0;background:#fff;border:3px solid #3fae5a;color:#2c7a3f;border-radius:14px;cursor:pointer;box-shadow:0 3px 0 #2c7a3f;touch-action:manipulation;-webkit-user-select:none;user-select:none}
 .seta:active{transform:translateY(2px);box-shadow:0 1px 0 #2c7a3f}
 #sUp{grid-column:2;grid-row:1}#sLeft{grid-column:1;grid-row:2}#sDown{grid-column:2;grid-row:2}#sRight{grid-column:3;grid-row:2}
-.overlay{position:fixed;inset:0;background:rgba(253,243,216,.97);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;text-align:center;padding:24px;z-index:10}
+.overlay{position:fixed;inset:0;background:#fdf3d8;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;text-align:center;padding:24px;z-index:10}
 .overlay.escondido{display:none}
 .overlay h1{font-size:26px;color:#2c7a3f}
 .overlay p{font-size:18px;color:#6b5b2a}
@@ -38,6 +42,8 @@ canvas{display:block;background:#fffdf3;border-radius:14px;border:4px solid #e7d
 .faseBtn.azul:active{box-shadow:0 2px 0 #1c5fa8}
 .faseBtn.bloqueado{opacity:.45;pointer-events:none}
 .voltar{background:transparent !important;color:#6b5b2a !important;box-shadow:none !important;font-size:17px !important;padding:6px 14px !important}
+#btnProxima{background:#2f86eb;box-shadow:0 5px 0 #1c5fa8}
+#btnProxima:active{box-shadow:0 2px 0 #1c5fa8}
 #btnCaca{background:#f2b418;color:#6b4b00;box-shadow:0 5px 0 #b98a0a}
 #btnMenu2{background:#fff;color:#6b5b2a;box-shadow:0 5px 0 #d8c58a}
 #medalha{font-size:72px;animation:pulsa 1s infinite alternate}
@@ -49,10 +55,11 @@ canvas{display:block;background:#fffdf3;border-radius:14px;border:4px solid #e7d
 <div id="app">
   <header>
     <div id="alvo"><span id="alvoTxt">Procure:</span><span id="alvoLetra">A</span></div>
-   <div style="display:flex;gap:6px">
-  <button id="btnVoz" onclick="voltarMenu()" title="Menu">🏠</button>
-  <button id="btnVoz" onclick="falarAlvo()" title="Repetir">🔊</button>
-</div>
+    <div style="display:flex;gap:6px">
+      <button class="btnTopo" onclick="voltarMenu()" title="Menu">🏠</button>
+      <button class="btnTopo" onclick="falarAlvo()" title="Repetir">🔊</button>
+      <button class="btnTopo" onclick="compartilhar()" title="Compartilhar">📤</button>
+    </div>
   </header>
   <div id="estrelas"></div>
   <div id="areaJogo">
@@ -72,8 +79,8 @@ canvas{display:block;background:#fffdf3;border-radius:14px;border:4px solid #e7d
   <h1>🐍 A Cobrinha das Vogais</h1>
   <p>Escolha a fase:</p>
   <button class="faseBtn" onclick="abrirFase(0)">🟢 Fase 1 · Vogais <span id="medVog"></span><small>A → E → I → O → U</small></button>
-  <button class="faseBtn azul" onclick="abrirBlocos()">🔵 Fase 2 · Consoantes <span id="medConso"></span><small>3 blocos de letrinhas</small></button>
-
+  <button class="faseBtn azul" onclick="abrirBlocos()">🔵 Fase 2 · Consoantes <span id="medConso"></span><small>5 blocos · alfabeto completo</small></button>
+  <p class="versao">Uma criação 52IA · versão 6</p>
 </div>
 
 <div id="menuBlocos" class="overlay escondido">
@@ -82,6 +89,8 @@ canvas{display:block;background:#fffdf3;border-radius:14px;border:4px solid #e7d
   <button class="faseBtn azul" id="btnB1" onclick="abrirBloco(1)">📦 Bloco 1 <span id="medB1"></span><small>M → P → S → T → B</small></button>
   <button class="faseBtn azul" id="btnB2" onclick="abrirBloco(2)">📦 Bloco 2 <span id="medB2"></span><small>L → N → D → C → F</small></button>
   <button class="faseBtn azul" id="btnB3" onclick="abrirBloco(3)">📦 Bloco 3 <span id="medB3"></span><small>V → R → G → H → J</small></button>
+  <button class="faseBtn azul" id="btnB4" onclick="abrirBloco(4)">📦 Bloco 4 <span id="medB4"></span><small>Q → X → Z</small></button>
+  <button class="faseBtn azul" id="btnB5" onclick="abrirBloco(5)">📦 Bloco 5 <span id="medB5"></span><small>K → W → Y</small></button>
   <button class="voltar" onclick="voltarMenu()">← Voltar</button>
 </div>
 
@@ -89,6 +98,7 @@ canvas{display:block;background:#fffdf3;border-radius:14px;border:4px solid #e7d
   <div id="medalha">🏆</div>
   <h1 id="tituloFim">🎉 Você completou!</h1>
   <p id="resumo"></p>
+  <button id="btnProxima" style="display:none" onclick="proximaFase()">Próxima fase ▶</button>
   <button id="btnDeNovo" onclick="jogarDeNovo()">Jogar de novo</button>
   <button id="btnCaca" onclick="modoCaca()">Modo caça 🔍</button>
   <button id="btnMenu2" onclick="voltarMenu()">🏠 Menu de fases</button>
@@ -96,9 +106,9 @@ canvas{display:block;background:#fffdf3;border-radius:14px;border:4px solid #e7d
 
 <script>
 /* =========================================================
-   A COBRINHA DAS VOGAIS v4 — alfabetização (4-5 anos)
+   A COBRINHA DAS VOGAIS v6 — alfabetização (4-5 anos)
    Fase 1: Vogais (A→E→I→O→U)
-   Fase 2: Consoantes em 3 blocos, com voz + palavra.
+   Fase 2: Consoantes em 5 blocos — alfabeto completo (26 letras).
    Cobra lenta, sem morte, progresso salvo no aparelho.
    ========================================================= */
 const COLS = 10, ROWS = 12;
@@ -132,6 +142,16 @@ const GRUPOS = [
     {l:'G', cor:'#27ae60', fala:'G de GATO'},
     {l:'H', cor:'#8e44ad', fala:'H de HOJE'},
     {l:'J', cor:'#f39c12', fala:'J de JACARÉ'}
+  ]},
+  { id:'b4', bloco:4, letras:[
+    {l:'Q', cor:'#8e44ad', fala:'Q de QUEIJO'},
+    {l:'X', cor:'#e74c3c', fala:'X de XÍCARA'},
+    {l:'Z', cor:'#16a085', fala:'Z de ZEBRA'}
+  ]},
+  { id:'b5', bloco:5, letras:[
+    {l:'K', cor:'#e74c3c', fala:'K de KIWI'},
+    {l:'W', cor:'#2f86eb', fala:'W de WIFI'},
+    {l:'Y', cor:'#f0b429', fala:'Y de YOGA'}
   ]}
 ];
 
@@ -144,7 +164,7 @@ const $ = s => document.querySelector(s);
 const tela = $('#tela'), ctx = tela.getContext('2d');
 
 // ---- Progresso salvo ----
-let prog = { vogais:false, blocos:[false,false,false] };
+let prog = { vogais:false, blocos:[false,false,false,false,false] };
 try{
   const s = localStorage.getItem('cobrinhaProgresso');
   if (s) prog = Object.assign(prog, JSON.parse(s));
@@ -156,8 +176,12 @@ function renderMenus(){
   $('#medB1').textContent = prog.blocos[0] ? '🏆' : '';
   $('#medB2').textContent = prog.blocos[1] ? '🏆' : (prog.blocos[0] ? '' : '🔒');
   $('#medB3').textContent = prog.blocos[2] ? '🏆' : (prog.blocos[1] ? '' : '🔒');
+  $('#medB4').textContent = prog.blocos[3] ? '🏆' : (prog.blocos[2] ? '' : '🔒');
+  $('#medB5').textContent = prog.blocos[4] ? '🏆' : (prog.blocos[3] ? '' : '🔒');
   $('#btnB2').classList.toggle('bloqueado', !prog.blocos[0]);
   $('#btnB3').classList.toggle('bloqueado', !prog.blocos[1]);
+  $('#btnB4').classList.toggle('bloqueado', !prog.blocos[2]);
+  $('#btnB5').classList.toggle('bloqueado', !prog.blocos[3]);
 }
 
 // ---- Voz em português ----
@@ -287,10 +311,16 @@ function completou(){
   else prog.blocos[grupo.bloco-1] = true;
   salvarProg();
   $('#tituloFim').textContent = grupo.id==='vogais' ? '🎉 Você completou as vogais!' :
-    (grupo.bloco===3 ? '🎉 Você completou as consoantes!' : '🎉 Bloco ' + grupo.bloco + ' concluído!');
+    (grupo.bloco===5 ? '🎉 Você completou o alfabeto!' : '🎉 Bloco ' + grupo.bloco + ' concluído!');
   $('#resumo').textContent = 'Você comeu ' + comidas + ' letrinha' + (comidas===1?'':'s') + '! 🏆';
+  const proximo = GRUPOS[GRUPOS.indexOf(grupo)+1];
+  $('#btnProxima').style.display = proximo ? 'inline-block' : 'none';
   $('#telaFim').classList.remove('escondido');
   falar('Parabéns!');
+}
+function proximaFase(){
+  const p = GRUPOS[GRUPOS.indexOf(grupo)+1];
+  if (p) iniciarGrupo(p, 'facil');
 }
 function iniciarGrupo(g, m){
   garantirAudio();
@@ -310,10 +340,16 @@ function jogarDeNovo(){ iniciarGrupo(grupo, 'facil'); }
 function modoCaca(){ iniciarGrupo(grupo, 'caca'); }
 function voltarMenu(){
   rodando = false;
+  letras = [];
   $('#menuBlocos').classList.add('escondido');
   $('#telaFim').classList.add('escondido');
   renderMenus();
   $('#menuFases').classList.remove('escondido');
+}
+function compartilhar(){
+  const dados = { title:'A Cobrinha das Vogais', text:'Brincadeira gratuita de letras para crianças de 4 a 5 anos 🐍', url: location.href.split('?')[0] };
+  if (navigator.share) navigator.share(dados).catch(()=>{});
+  else { navigator.clipboard && navigator.clipboard.writeText(dados.url); balao('Link copiado! 📋'); }
 }
 
 // ---- Direções (função global — usada pelo onclick dos botões) ----
