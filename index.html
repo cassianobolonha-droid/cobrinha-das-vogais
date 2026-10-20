@@ -31,13 +31,18 @@ canvas{display:block;background:#fffdf3;border-radius:14px;border:4px solid #e7d
 .seta{font-size:22px;padding:8px 0;background:#fff;border:3px solid #3fae5a;color:#2c7a3f;border-radius:14px;cursor:pointer;box-shadow:0 3px 0 #2c7a3f;touch-action:manipulation;-webkit-user-select:none;user-select:none}
 .seta:active{transform:translateY(2px);box-shadow:0 1px 0 #2c7a3f}
 #sUp{grid-column:2;grid-row:1}#sLeft{grid-column:1;grid-row:2}#sDown{grid-column:2;grid-row:2}#sRight{grid-column:3;grid-row:2}
-.overlay{position:fixed;inset:0;background:#fdf3d8;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;text-align:center;padding:20px;z-index:10;overflow-y:auto}
+/* ===== CORREÇÃO SAMSUNG: menus que centralizam quando cabem
+   e ROLAM quando não cabem — nada mais corta nas pontas ===== */
+.overlay{position:fixed;inset:0;background:#fdf3d8;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:12px;text-align:center;padding:20px;z-index:10;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.overlay > *{flex-shrink:0}
+.overlay > :first-child{margin-top:auto}
+.overlay > :last-child{margin-bottom:auto}
 .overlay.escondido{display:none}
 .overlay h1{font-size:28px;color:#2c7a3f}
 .overlay p{font-size:18px;color:#6b5b2a}
 .overlay button{font-family:inherit;font-size:22px;font-weight:600;padding:12px 28px;border-radius:18px;border:none;cursor:pointer;background:#3fae5a;color:#fff;box-shadow:0 5px 0 #2c7a3f;touch-action:manipulation}
-.overlay button:active{transform:translateY(3px);box-shadow:0 2px 0 #2c7a3f}
-.faseBtn{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;width:min(92vw,420px);min-height:104px;padding:12px 20px;font-size:23px}
+.overlay button:active{transform:translateY(3px);box-shadow:0 2px 0 #c2542a}
+.faseBtn{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;width:min(92vw,420px);min-height:0;padding:12px 20px;font-size:23px}
 .faseBtn small{font-size:14px;font-weight:500;opacity:.85}
 .faseBtn.azul{background:#2f86eb;box-shadow:0 5px 0 #1c5fa8}
 .faseBtn.azul:active{box-shadow:0 2px 0 #1c5fa8}
@@ -87,7 +92,6 @@ canvas{display:block;background:#fffdf3;border-radius:14px;border:4px solid #e7d
     <button class="seta" id="sRight" onclick="setDir(1,0)">▶</button>
   </div>
 </div>
-
 <div id="menuFases" class="overlay">
   <h1>🐍 Cobrinha do Alfabeto</h1>
   <p>Escolha a fase:</p>
@@ -115,7 +119,6 @@ canvas{display:block;background:#fffdf3;border-radius:14px;border:4px solid #e7d
   </button>
   <p class="versao">Criado por Cassiano Bolonha</p>
 </div>
-
 <div id="menuBlocos" class="overlay escondido">
   <h1>🔵 Consoantes</h1>
   <p>Escolha o bloco:</p>
@@ -162,7 +165,6 @@ canvas{display:block;background:#fffdf3;border-radius:14px;border:4px solid #e7d
   </button>
   <button class="voltar" onclick="voltarMenu()">← Voltar</button>
 </div>
-
 <div id="pedirNome" class="overlay escondido">
   <h1>🔤 Qual é o seu nome?</h1>
   <p>A cobrinha vai comer as letras do seu nome!</p>
@@ -170,7 +172,6 @@ canvas{display:block;background:#fffdf3;border-radius:14px;border:4px solid #e7d
   <button class="faseBtn" onclick="confirmarNome()">🐍 Começar!</button>
   <button class="voltar" onclick="fecharNome()">← Voltar</button>
 </div>
-
 <div id="painelShare" class="overlay escondido">
   <h1>📤 Compartilhar</h1>
   <p>Mande a Cobrinha pra alguém:</p>
@@ -179,7 +180,6 @@ canvas{display:block;background:#fffdf3;border-radius:14px;border:4px solid #e7d
   <button class="faseBtn" id="btnNativo" onclick="compartilharNativo()">📱 Compartilhar… (do celular)</button>
   <button class="voltar" onclick="fecharShare()">← Voltar</button>
 </div>
-
 <div id="telaFim" class="overlay escondido">
   <div id="medalha">🏆</div>
   <h1 id="tituloFim">🎉 Você completou!</h1>
@@ -190,7 +190,6 @@ canvas{display:block;background:#fffdf3;border-radius:14px;border:4px solid #e7d
   <button id="btnCaca" onclick="modoCaca()">Modo caça 🔍</button>
   <button id="btnMenu2" onclick="voltarMenu()">🏠 Menu de fases</button>
 </div>
-
 <script>
 /* =========================================================
    COBRINHA DO ALFABETO — alfabetização (4-5 anos)
@@ -206,10 +205,16 @@ canvas{display:block;background:#fffdf3;border-radius:14px;border:4px solid #e7d
    Cobra nasce com 2 blocos; letras comidas grudam no
    corpo na ordem; esbarrar não corta nada. Sem morte,
    sem coleta de dados, progresso salvo no aparelho.
+   CORREÇÕES (layout e cores originais preservados):
+   1. Menus centralizam quando cabem e ROLAM quando
+      não cabem — fim do corte do Y/Z e do rodapé.
+   2. Botões de fase sem altura mínima fixa — o card
+      cresce conforme as letras.
+   3. Motor de voz robusto (espera entre falas,
+      destrava motor pausado, tenta de novo sozinho).
    ========================================================= */
 const COLS = 10, ROWS = 12;
 const TICK = 420;
-
 const GRUPOS = [
   { id:'vogais', bloco:0, letras:[
     {l:'A', cor:'#e74c3c', fala:'a'},
@@ -276,9 +281,7 @@ const GRUPOS = [
     {l:'Z', cor:'#16a085', fala:'zê'}
   ]}
 ];
-
 const PALETA_NOME = ['#e74c3c','#2f86eb','#f0b429','#e8752a','#8e44ad','#16a085','#d35400','#2980b9','#27ae60','#8e44ad','#e67e22','#c0392b'];
-
 let cobra = [], dir = {x:1,y:0}, dirPendente = null;
 let grupo = GRUPOS[0], alvoIdx = 0, comidas = 0, rodando = false, modo = 'facil';
 let letras = [];
@@ -287,10 +290,8 @@ let erroT = 0, cel = 30;
 let crescerPendente = 0;
 let grupoNome = null;
 let festaTimer = null;
-
 const $ = s => document.querySelector(s);
 const tela = $('#tela'), ctx = tela.getContext('2d');
-
 // ---- Progresso e nome salvos no aparelho ----
 let prog = { vogais:false, blocos:[false,false,false,false], nome:false, alfabeto:false };
 try{
@@ -330,21 +331,45 @@ function renderMenus(){
     linha.appendChild(b);
   });
 })();
-
-// ---- Voz em português ----
+// ---- Voz em português (motor robusto) ----
 let vozPT = null;
 function acharVoz(){
   const vs = speechSynthesis.getVoices();
-  vozPT = vs.find(v => /pt[-_]BR/i.test(v.lang)) || vs.find(v => /^pt/i.test(v.lang)) || null;
+  const ptBR = vs.filter(v => /pt[-_]br/i.test(v.lang));
+  const pt = vs.filter(v => /^pt/i.test(v.lang));
+  vozPT = ptBR.find(v => /google/i.test(v.name))
+       || pt.find(v => /google/i.test(v.name))
+       || ptBR[0] || pt[0] || null;
 }
 if ('speechSynthesis' in window){ acharVoz(); speechSynthesis.onvoiceschanged = acharVoz; }
 function falar(txt){
   if (!('speechSynthesis' in window)) return;
-  speechSynthesis.cancel();
-  const u = new SpeechSynthesisUtterance(txt);
-  u.lang = 'pt-BR'; u.rate = .95; u.pitch = 1.1;
-  if (vozPT) u.voice = vozPT;
-  speechSynthesis.speak(u);
+  const limpo = txt.replace(/[\u{1F000}-\u{1FAFF}\u{2600}-\u{27BF}\u{FE0F}\u{2B00}-\u{2BFF}]/gu,'').replace(/\s+/g,' ').trim();
+  if (!limpo) return;
+  function tentarFalar(segunda){
+    if (!vozPT) acharVoz();
+    let comecou = false;
+    try{
+      const u = new SpeechSynthesisUtterance(limpo);
+      u.lang = 'pt-BR'; u.rate = .95; u.pitch = 1.1; u.volume = 1;
+      if (vozPT) u.voice = vozPT;
+      u.onstart = ()=>{ comecou = true; };
+      speechSynthesis.speak(u);
+    }catch(e){ return; }
+    setTimeout(()=>{ try{ speechSynthesis.resume(); }catch(e){} }, 150);
+    if (!segunda){
+      setTimeout(()=>{
+        if (!comecou){
+          try{ speechSynthesis.cancel(); }catch(e){}
+          setTimeout(()=>tentarFalar(true), 250);
+        }
+      }, 2000);
+    }
+  }
+  let ocupado = false;
+  try{ ocupado = speechSynthesis.speaking || speechSynthesis.pending; }catch(e){}
+  if (ocupado){ try{ speechSynthesis.cancel(); }catch(e){} setTimeout(()=>tentarFalar(false), 180); }
+  else tentarFalar(false);
 }
 function atual(){ return grupo.letras[alvoIdx]; }
 function falarAlvo(){ falar('A cobrinha quer a letra ' + atual().fala + '!'); }
@@ -354,7 +379,6 @@ function anunciarAlvo(){
   $('#alvoLetra').style.background = a.cor;
   falarAlvo();
 }
-
 // ---- Sons ----
 let audio = null;
 function garantirAudio(){ if (!audio){ try{ audio = new (window.AudioContext||window.webkitAudioContext)(); }catch(e){} } }
@@ -369,7 +393,6 @@ function nota(freq, ini, dur, tipo, vol){
 function somGlup(){ if(audio){ nota(523,0,.09,'triangle',.25); nota(784,.09,.14,'triangle',.25); } }
 function somOps(){ if(audio) nota(196,0,.18,'sine',.18); }
 function somFesta(){ if(audio) [523,659,784,1047].forEach((f,i)=>nota(f,i*.14,.22,'triangle',.22)); }
-
 // ---- Confete e balão ----
 function confete(qtd){
   const cores = ['#e74c3c','#2f86eb','#f0b429','#e8752a','#8e44ad','#3fae5a'];
@@ -395,7 +418,6 @@ function pintarEstrelas(){
   const n = Math.min(comidas, 10);
   $('#estrelas').textContent = '⭐'.repeat(n) + (comidas>10 ? ' x'+comidas : '');
 }
-
 // ---- Tabuleiro ----
 function celulaLivre(l){
   while (true){
@@ -411,7 +433,6 @@ function colocarLetras(){
   if (modo === 'facil') letras.push(celulaLivre(atual()));
   else grupo.letras.forEach(v => letras.push(celulaLivre(v)));
 }
-
 // ---- Cobra (nasce com 2 blocos) ----
 function novaCobra(){
   for (let y=2; y<ROWS-2; y++){
@@ -422,7 +443,6 @@ function novaCobra(){
   }
   cobra=[{x:5,y:6},{x:4,y:6}]; dir={x:1,y:0}; dirPendente=null;
 }
-
 // ---- Resgate: se enrolar de vez, reencaixa sem perder letras ----
 function reorganizar(){
   const n = cobra.length;
@@ -447,7 +467,6 @@ function reorganizar(){
     }
   }
 }
-
 // ---- Passo da cobra (esbarrar não corta nada) ----
 function passo(){
   if (dirPendente){
@@ -484,8 +503,7 @@ function passo(){
   }
   if (crescerPendente > 0) crescerPendente--; else cobra.pop();
 }
-
-// ---- Festa final: a cobrinha em cena com o nome completo ----
+// ---- Festa final ----
 function completou(){
   rodando = false;
   somFesta();
@@ -520,7 +538,7 @@ function mostrarTelaFim(){
   $('#btnProxima').style.display = proximo ? 'inline-block' : 'none';
   $('#telaFim').classList.remove('escondido');
   if (grupo.id === 'meuNome' && nomeSalvo()) falar('Parabéns, ' + nomeSalvo() + '!');
-else falar('Parabéns!');
+  else falar('Parabéns!');
 }
 function proximaFase(){
   clearTimeout(festaTimer);
@@ -559,7 +577,6 @@ function voltarMenu(){
   renderMenus();
   $('#menuFases').classList.remove('escondido');
 }
-
 // ---- Modo "Meu nome" ----
 function abrirNome(){
   $('#menuFases').classList.add('escondido');
@@ -580,8 +597,7 @@ function confirmarNome(){
   iniciarGrupo(grupoNome, 'facil');
   falar('Vamos lá, ' + limpo + '!');
 }
-
-// ---- Compartilhar (painel visível, sempre com resposta) ----
+// ---- Compartilhar ----
 let pausadoPorPainel = false;
 function linkJogo(){ return location.href.split('?')[0]; }
 function textoShare(){ return 'Brincadeira gratuita de letras para crianças de 4 a 5 anos 🐍 ' + linkJogo(); }
@@ -616,8 +632,7 @@ function compartilharNativo(){
       .catch(()=>{});
   } else copiarLink();
 }
-
-// ---- Direções (função global — usada pelo onclick dos botões) ----
+// ---- Direções ----
 function setDir(x,y){
   if (!rodando) return;
   if (dir.x === x && dir.y === y) return;
@@ -647,7 +662,6 @@ document.addEventListener('touchmove', e=>{
   if (Math.abs(dx) > Math.abs(dy)) setDir(dx>0?1:-1, 0); else setDir(0, dy>0?1:-1);
   toqueIni = {x:e.touches[0].clientX, y:e.touches[0].clientY};
 }, {passive:true});
-
 // ---- Desenho ----
 function rrect(x,y,w,h,r){
   ctx.beginPath();
@@ -711,7 +725,6 @@ function desenhar(agora){
     }
   });
 }
-
 // ---- Tamanho ----
 function redimensionar(){
   const area = $('#areaJogo');
@@ -724,7 +737,6 @@ function redimensionar(){
   ctx.setTransform(dpr,0,0,dpr,0,0);
 }
 window.addEventListener('resize', redimensionar);
-
 // ---- Loop ----
 let ultimoTick = 0;
 function loop(agora){
